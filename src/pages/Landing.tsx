@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Key, Moon, Sun } from 'lucide-react';
+import { Building2, Key, Moon, Sun, ChevronRight } from 'lucide-react';
 import Auth from '../components/Auth';
 
 export default function MinimalistLanding() {
@@ -45,16 +45,16 @@ export default function MinimalistLanding() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-[#202020] text-gray-900 dark:text-gray-200 transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-[#202020] text-gray-900 dark:text-gray-200 transition-colors duration-200">
       {/* Header */}
-      <header className="bg-gray-100 dark:bg-[#1b1b1b] border-b border-gray-200 dark:border-[#3b3b3b] py-3 px-6 transition-colors duration-200">
+      <header className="bg-gray-100 dark:bg-[#1b1b1b] border-b border-gray-200 dark:border-[#3b3b3b] py-3 px-4 md:px-6 transition-colors duration-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <img src="/logo-nobg.png" alt="Rooming" className="h-8 w-8 invert" />
-            <span className="text-xl font-medium text-gray-900 dark:text-white">Rooming</span>
+            <span className="ml-2 text-xl font-medium text-gray-900 dark:text-white">Rooming</span>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Dark mode toggle */}
             <button
               onClick={toggleDarkMode}
@@ -66,7 +66,7 @@ export default function MinimalistLanding() {
 
             <button
               onClick={() => handleAuthClick('tenant')}
-              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-1.5 text-sm font-medium border border-transparent hover:border-gray-300 dark:hover:border-[#3b3b3b] hover:bg-gray-200 dark:hover:bg-[#292929] rounded transition-colors"
+              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-2 sm:px-3 py-1.5 text-sm font-medium border border-transparent hover:border-gray-300 dark:hover:border-[#3b3b3b] hover:bg-gray-200 dark:hover:bg-[#292929] rounded transition-colors"
             >
               Sign in
             </button>
@@ -74,24 +74,24 @@ export default function MinimalistLanding() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex">
-        {/* Left Section: Content */}
-        <div className="w-1/2 p-10 flex flex-col justify-center">
-          <div className="max-w-xl">
-            <div className="inline-block py-1 px-3 mb-6 bg-[#0078d4]/10 border border-[#0078d4]/20 rounded-sm text-[#0078d4]">
+      {/* Main Content - Responsive Layout */}
+      <main className="flex-1 flex flex-col md:flex-row">
+        {/* Left Section: Content - Full width on mobile, half on desktop */}
+        <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-10 flex flex-col justify-center">
+          <div className="max-w-xl mx-auto md:mx-0">
+            <div className="inline-block py-1 px-3 mb-4 sm:mb-6 bg-[#0078d4]/10 border border-[#0078d4]/20 rounded-sm text-[#0078d4]">
               <span className="text-sm font-medium">Property Management</span>
             </div>
 
-            <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white mb-6">
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900 dark:text-white mb-4 sm:mb-6">
               Manage your properties with ease
             </h1>
 
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8">
               A modern solution for landlords and tenants to streamline property management operations.
             </p>
 
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
               <button
                 onClick={() => handleAuthClick('tenant')}
                 className="inline-flex items-center justify-center px-6 py-2.5 text-base font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-[#2b2b2b] hover:bg-gray-100 dark:hover:bg-[#3b3b3b] border border-gray-300 dark:border-[#3b3b3b] rounded transition-colors"
@@ -110,8 +110,8 @@ export default function MinimalistLanding() {
           </div>
         </div>
 
-        {/* Right Section: Hero Image */}
-        <div className="w-1/2 bg-gradient-to-br from-[#0078d4]/5 via-[#0078d4]/10 to-[#0078d4]/5 dark:from-[#0078d4]/20 dark:via-[#0078d4]/10 dark:to-[#0078d4]/5 flex items-center justify-center p-10">
+        {/* Right Section: Hero Image - Hidden on smallest screens, visible from medium up */}
+        <div className="hidden md:flex w-full md:w-1/2 bg-gradient-to-br from-[#0078d4]/5 via-[#0078d4]/10 to-[#0078d4]/5 dark:from-[#0078d4]/20 dark:via-[#0078d4]/10 dark:to-[#0078d4]/5 items-center justify-center p-6 md:p-10">
           <div className="relative w-full max-w-md aspect-video bg-white dark:bg-[#252525] rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-[#3b3b3b]">
             {/* Dashboard Preview Image */}
             <div className="absolute top-0 left-0 right-0 h-10 bg-gray-100 dark:bg-[#1b1b1b] border-b border-gray-200 dark:border-[#3b3b3b] flex items-center px-4">
@@ -135,12 +135,44 @@ export default function MinimalistLanding() {
             </div>
           </div>
         </div>
+
+        {/* Mobile-only feature highlights - Visible on small screens only */}
+        <div className="block md:hidden px-6 py-8 bg-gray-50 dark:bg-[#1b1b1b] border-t border-gray-200 dark:border-[#3b3b3b]">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
+            Key Features
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-start p-4 bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b]">
+              <div className="p-2 bg-[#0078d4]/10 rounded-full mr-4">
+                <Building2 className="h-5 w-5 text-[#0078d4]" />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-1">Property Management</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Easily manage multiple properties from a single dashboard</p>
+              </div>
+            </div>
+
+            <div className="flex items-start p-4 bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b]">
+              <div className="p-2 bg-[#0078d4]/10 rounded-full mr-4">
+                <Key className="h-5 w-5 text-[#0078d4]" />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-1">Tenant Portal</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Streamlined communication and payments for tenants</p>
+              </div>
+            </div>
+
+            <a href="#learn-more" className="flex items-center justify-center text-[#0078d4] text-sm font-medium mt-2">
+              Learn more about features <ChevronRight size={16} className="ml-1" />
+            </a>
+          </div>
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-100 dark:bg-[#1b1b1b] border-t border-gray-200 dark:border-[#3b3b3b] py-3 px-6 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
-        <div className="flex justify-between items-center">
-          <div>© 2025 Rooming, Inc. All rights reserved.</div>
+      <footer className="bg-gray-100 dark:bg-[#1b1b1b] border-t border-gray-200 dark:border-[#3b3b3b] py-3 px-4 md:px-6 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
+        <div className="flex flex-col sm:flex-row justify-between items-center">
+          <div className="mb-2 sm:mb-0">© 2025 Rooming, Inc. All rights reserved.</div>
           <div className="flex space-x-6">
             <a href="#" className="hover:text-gray-700 dark:hover:text-gray-300">Privacy</a>
             <a href="#" className="hover:text-gray-700 dark:hover:text-gray-300">Terms</a>
