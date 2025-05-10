@@ -28,10 +28,12 @@ export default function MessageThread({ receiverId, receiverEmail }: MessageThre
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadMessages();
-    const interval = setInterval(loadMessages, 10000); // Refresh every 10 seconds
-    return () => clearInterval(interval);
-  }, []);
+    if (user) {
+      loadMessages();
+      const interval = setInterval(loadMessages, 10000); // Refresh every 10 seconds
+      return () => clearInterval(interval);
+    }
+  }, [user]); // Added user to dependency array
 
   useEffect(() => {
     scrollToBottom();
