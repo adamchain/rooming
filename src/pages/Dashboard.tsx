@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import MessageThread from '../components/MessageThread';
 import { Building2, DollarSign, Wrench, FileText } from 'lucide-react';
 import { formatCurrency } from '../utils/formatters';
+import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
+  const { user } = useAuth();
+  
   // Demo data for initial render
   const [data, setData] = useState({
     tenants: [
@@ -24,6 +27,17 @@ export default function Dashboard() {
       documentsToReview: 2
     }
   });
+
+  if (!user?.id) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-[#202020]">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Please sign in</h2>
+          <p className="text-gray-600 dark:text-gray-400">You need to be signed in to view the dashboard</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

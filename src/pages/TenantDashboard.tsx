@@ -114,7 +114,6 @@ export default function TenantDashboard() {
   };
 
   const handleSplitPayment = (roommates) => {
-    // Close roommate modal and open payment form
     setShowRoommateModal(false);
     setShowPaymentModal(true);
   };
@@ -274,133 +273,127 @@ export default function TenantDashboard() {
               </p>
             </div>
 
+            {/* Quick Actions */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {navigationItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleSectionClick(item.id)}
+                  className="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#252525] border border-gray-200 dark:border-[#3b3b3b] rounded-md hover:border-[#0078d4] dark:hover:border-[#0078d4] transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-full bg-[#0078d4]/10 flex items-center justify-center mb-2">
+                    <item.icon className="h-5 w-5 text-[#0078d4]" />
+                  </div>
+                  <span className="text-sm font-medium">{item.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Next Payment */}
+            <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Next Payment Due</p>
+                  <p className="text-2xl font-semibold text-[#0078d4]">
+                    {formatCurrency(data.property.rent_amount)}
+                  </p>
+                </div>
+                <div className="flex space-x-2">
+                  <button 
+                    onClick={() => setShowRoommateModal(true)}
+                    className="px-4 py-2 bg-white dark:bg-[#1b1b1b] text-[#0078d4] border border-[#0078d4] rounded hover:bg-[#0078d4] hover:text-white text-sm font-medium transition-colors flex items-center"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Split with Roommates
+                  </button>
+                  <button 
+                    onClick={() => setShowPaymentModal(true)}
+                    className="px-4 py-2 bg-[#0078d4] text-white rounded hover:bg-[#106ebe] text-sm font-medium"
+                  >
+                    Make Payment
+                  </button>
+                </div>
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Due on {getNextPaymentDate()}</p>
+            </div>
+
+            {/* Property Overview */}
+            <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6 mb-8">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Property Overview</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Property</p>
+                  <p className="font-medium">{data.property.name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Address</p>
+                  <p className="font-medium">{data.property.address}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Lease Period</p>
+                  <p className="font-medium">
+                    {new Date(data.property.lease_start).toLocaleDateString()} to{' '}
+                    {new Date(data.property.lease_end).toLocaleDateString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Rent</p>
+                  <p className="font-medium text-[#0078d4]">{formatCurrency(data.property.rent_amount)}</p>
+                </div>
+              </div>
+            </div>
+
             {/* Message Thread */}
             <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Send Non-Urgent Message</h2>
               <MessageThread 
                 receiverId={data.property.user_id}
                 receiverEmail="Property Manager"
               />
             </div>
 
-            {/* Render different sections based on activeSection */}
-            {activeSection === 'maintenance' ? (
-              renderMaintenanceSection()
-            ) : (
-              <>
-                {/* Property Overview */}
-                <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6 mb-8">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Property Overview</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Property</p>
-                      <p className="font-medium">{data.property.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Address</p>
-                      <p className="font-medium">{data.property.address}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Lease Period</p>
-                      <p className="font-medium">
-                        {new Date(data.property.lease_start).toLocaleDateString()} to{' '}
-                        {new Date(data.property.lease_end).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Rent</p>
-                      <p className="font-medium text-[#0078d4]">{formatCurrency(data.property.rent_amount)}</p>
-                    </div>
-                  </div>
+            {/* Payment Modal */}
+            {showPaymentModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-md w-full relative">
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-500"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                  <RentPaymentForm
+                    amount={data.property.rent_amount}
+                    onSuccess={() => {
+                      setShowPaymentModal(false);
+                    }}
+                    onError={(error) => {
+                      console.error('Payment error:', error);
+                    }}
+                    setupRecurring={true}
+                  />
                 </div>
+              </div>
+            )}
 
-                {/* Quick Actions */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                  {navigationItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => handleSectionClick(item.id)}
-                      className="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#252525] border border-gray-200 dark:border-[#3b3b3b] rounded-md hover:border-[#0078d4] dark:hover:border-[#0078d4] transition-colors"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-[#0078d4]/10 flex items-center justify-center mb-2">
-                        <item.icon className="h-5 w-5 text-[#0078d4]" />
-                      </div>
-                      <span className="text-sm font-medium">{item.label}</span>
-                    </button>
-                  ))}
+            {/* Roommate Modal */}
+            {showRoommateModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-4xl w-full relative">
+                  <button
+                    onClick={() => setShowRoommateModal(false)}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-500"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Split Rent with Roommates</h2>
+                  <RoommateManager
+                    tenantId={data.tenant.id}
+                    rentAmount={data.property.rent_amount}
+                    onSplitPayment={handleSplitPayment}
+                  />
                 </div>
-
-                {/* Next Payment */}
-                <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Next Payment Due</p>
-                      <p className="text-2xl font-semibold text-[#0078d4]">
-                        {formatCurrency(data.property.rent_amount)}
-                      </p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={() => setShowRoommateModal(true)}
-                        className="px-4 py-2 bg-white dark:bg-[#1b1b1b] text-[#0078d4] border border-[#0078d4] rounded hover:bg-[#0078d4] hover:text-white text-sm font-medium transition-colors flex items-center"
-                      >
-                        <Users className="h-4 w-4 mr-2" />
-                        Split with Roommates
-                      </button>
-                      <button 
-                        onClick={() => setShowPaymentModal(true)}
-                        className="px-4 py-2 bg-[#0078d4] text-white rounded hover:bg-[#106ebe] text-sm font-medium"
-                      >
-                        Make Payment
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Due on {getNextPaymentDate()}</p>
-                </div>
-
-                {/* Payment Modal */}
-                {showPaymentModal && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-md w-full relative">
-                      <button
-                        onClick={() => setShowPaymentModal(false)}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-500"
-                      >
-                        <X className="h-5 w-5" />
-                      </button>
-                      <RentPaymentForm
-                        amount={data.property.rent_amount}
-                        onSuccess={() => {
-                          setShowPaymentModal(false);
-                        }}
-                        onError={(error) => {
-                          console.error('Payment error:', error);
-                        }}
-                        setupRecurring={true}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Roommate Modal */}
-                {showRoommateModal && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-4xl w-full relative">
-                      <button
-                        onClick={() => setShowRoommateModal(false)}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-500"
-                      >
-                        <X className="h-5 w-5" />
-                      </button>
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Split Rent with Roommates</h2>
-                      <RoommateManager
-                        tenantId={data.tenant.id}
-                        rentAmount={data.property.rent_amount}
-                        onSplitPayment={handleSplitPayment}
-                      />
-                    </div>
-                  </div>
-                )}
-              </>
+              </div>
             )}
           </main>
         </div>
