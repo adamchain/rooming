@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send } from 'lucide-react';
+import { Send, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import messageService from '../services/messageService';
 import { formatDistanceToNow } from 'date-fns';
@@ -18,29 +18,31 @@ interface Message {
 interface MessageThreadProps {
   receiverId: string;
   receiverEmail: string;
+  onClose?: () => void;
 }
 
-export default function MessageThread({ receiverId, receiverEmail }: MessageThreadProps) {
+export default function MessageThread({ receiverId, receiverEmail, onClose }: MessageThreadProps) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showThread, setShowThread] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (user) {
+    if (user && showThread) {
       loadMessages();
       const interval = setInterval(loadMessages, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }
-  }, [user]); // Added user to dependency array
+  }, [user, showThread]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const loadMessages = async () => {
-    if (!user) return; // Early return if no user is authenticated
+    if (!user) return;
     
     try {
       const data = await messageService.getMessages();
@@ -79,21 +81,40 @@ export default function MessageThread({ receiverId, receiverEmail }: MessageThre
     }
   };
 
-  // If no user is authenticated, show a message instead of the chat interface
   if (!user) {
     return (
-      <div className="flex flex-col h-[600px] bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] items-center justify-center">
+      <div className="flex flex-col h-[200px] bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] items-center justify-center">
         <p className="text-gray-600 dark:text-gray-300">Please log in to view messages.</p>
       </div>
     );
   }
 
+  if (!showThread) {
+    return (
+      <button
+        onClick={() => setShowThread(true)}
+        className="w-full py-2 px-4 bg-[#0078d4] text-white rounded hover:bg-[#106ebe] transition-colors"
+      >
+        Start Chat
+      </button>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-[600px] bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b]">
-      <div className="px-4 py-3 border-b border-gray-200 dark:border-[#3b3b3b]">
+    <div className="flex flex-col h-[400px] bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b]">
+      <div className="px-4 py-3 border-b border-gray-200 dark:border-[#3b3b3b] flex justify-between items-center">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
           Chat with {receiverEmail}
         </h3>
+        <button
+          onClick={() => {
+            setShowThread(false);
+            onClose?.();
+          }}
+          className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
