@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const GETTRX_API_URL = 'https://api-sandbox.gettrx.com/v1';
+// Using the production API endpoint instead of sandbox
+const GETTRX_API_URL = 'https://api.gettrx.com/v1';
 const GETTRX_SECRET_KEY = 'sk_gDOd9rcdoq89j8iIatmQ7nPy8L4G3ebZ9Q4sZH4tiswkVHDorvdQ-SP3IpjN-lMw';
 const GETTRX_MERCHANT_ID = 'acm_67c1039bd94d3f0001ee9801';
 
@@ -16,17 +17,25 @@ class MerchantService {
 
   async signInMerchant(email: string, password: string) {
     try {
+      // Add timeout to the fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch(`${GETTRX_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to sign in to merchant account');
+        throw new Error(error.message || `HTTP error! status: ${response.status}`);
       }
 
       const { merchantId, accessToken } = await response.json();
@@ -47,6 +56,12 @@ class MerchantService {
 
       return { merchantId, accessToken };
     } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - please try again');
+      }
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        throw new Error('Network error - please check your connection and try again');
+      }
       console.error('Error signing in to merchant account:', error);
       throw error;
     }
@@ -70,10 +85,14 @@ class MerchantService {
     };
   }) {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(`${GETTRX_API_URL}/merchants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': `Bearer ${GETTRX_SECRET_KEY}`
         },
         body: JSON.stringify({
@@ -84,12 +103,15 @@ class MerchantService {
             address: data.address
           },
           bankAccount: data.bankAccount
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to create merchant account');
+        throw new Error(error.message || `HTTP error! status: ${response.status}`);
       }
 
       const { merchantId, publicKey } = await response.json();
@@ -111,6 +133,12 @@ class MerchantService {
       if (error) throw error;
       return { merchantId, publicKey };
     } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - please try again');
+      }
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        throw new Error('Network error - please check your connection and try again');
+      }
       console.error('Error creating merchant account:', error);
       throw error;
     }
