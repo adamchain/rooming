@@ -51,18 +51,20 @@ class PaymentService {
           amount: Math.round(amount * 100), // Convert to cents
           currency: 'usd',
           setupFutureUsage: setupFutureUsage ? 'off_session' : undefined,
-          paymentToken
+          paymentToken,
+          onBehalfOf: GETTRX_MERCHANT_ID,
+          description: 'Rent Payment'
         })
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to create payment');
+        throw new Error(error.message || 'Failed to process payment');
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error creating payment:', error);
+      console.error('Error processing payment:', error);
       throw error;
     }
   }
@@ -81,18 +83,20 @@ class PaymentService {
           currency: 'usd',
           setupFutureUsage: 'off_session',
           paymentMethodId,
-          customer: customerId
+          customer: customerId,
+          onBehalfOf: GETTRX_MERCHANT_ID,
+          description: 'Recurring Rent Payment'
         })
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to create recurring payment');
+        throw new Error(error.message || 'Failed to set up recurring payment');
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error creating recurring payment:', error);
+      console.error('Error setting up recurring payment:', error);
       throw error;
     }
   }
