@@ -5,7 +5,6 @@ class FinancialService {
   private openai;
   private clientId: string;
   private clientSecret: string;
-  private redirectUri: string;
 
   constructor() {
     this.openai = new OpenAI({
@@ -14,7 +13,6 @@ class FinancialService {
     });
     this.clientId = import.meta.env.VITE_QUICKBOOKS_CLIENT_ID;
     this.clientSecret = import.meta.env.VITE_QUICKBOOKS_CLIENT_SECRET;
-    this.redirectUri = `${window.location.origin}/quickbooks/callback`;
   }
 
   async isConnected(): Promise<boolean> {
@@ -37,48 +35,45 @@ class FinancialService {
 
   async connect(): Promise<void> {
     try {
-      const scopes = encodeURIComponent('com.intuit.quickbooks.accounting');
-      const state = encodeURIComponent(Math.random().toString(36).substring(7));
-      
-      const authUrl = new URL('https://appcenter.intuit.com/connect/oauth2');
-      authUrl.searchParams.append('client_id', this.clientId);
-      authUrl.searchParams.append('response_type', 'code');
-      authUrl.searchParams.append('scope', scopes);
-      authUrl.searchParams.append('redirect_uri', this.redirectUri);
-      authUrl.searchParams.append('state', state);
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/quickbooks-auth`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({ action: 'authorize' })
+      });
 
-      window.location.href = authUrl.toString();
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to initialize QuickBooks connection');
+      }
+
+      const { url } = await response.json();
+      window.location.href = url;
     } catch (error) {
       console.error('Error connecting to QuickBooks:', error);
-      throw new Error('Failed to connect to QuickBooks');
+      throw error;
     }
   }
 
   async handleCallback(code: string): Promise<void> {
     try {
-      const tokenUrl = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
-      const authHeader = btoa(`${this.clientId}:${this.clientSecret}`);
-
-      const response = await fetch(tokenUrl, {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/quickbooks-auth`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${authHeader}`
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
         },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          code,
-          redirect_uri: this.redirectUri
-        })
+        body: JSON.stringify({ action: 'token', code })
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Failed to get QuickBooks tokens: ${errorData.error_description || 'Unknown error'}`);
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to get QuickBooks tokens');
       }
 
       const tokens = await response.json();
-
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
@@ -88,8 +83,8 @@ class FinancialService {
           user_id: user.id,
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,
-          realm_id: tokens.realmId,
-          access_token_expires_at: new Date(Date.now() + tokens.expires_in * 1000).toISOString()
+          realm_id: tokens.realm_id,
+          access_token_expires_at: tokens.expires_at
         });
     } catch (error) {
       console.error('Error handling QuickBooks callback:', error);
@@ -98,7 +93,7 @@ class FinancialService {
   }
 
   async getMetrics() {
-    // For demo purposes, returning mock data
+    // Demo data for presentation
     return {
       revenue: 150000,
       expenses: 85000,

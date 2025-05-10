@@ -15,12 +15,14 @@ serve(async (req) => {
 
   try {
     const { action, code } = await req.json();
+    const origin = req.headers.get('origin') || '';
+    const redirectUri = `${origin}/dashboard/financials/quickbooks/callback`;
 
     const oauthClient = new IntuitOAuth({
       clientId: Deno.env.get('QUICKBOOKS_CLIENT_ID')!,
       clientSecret: Deno.env.get('QUICKBOOKS_CLIENT_SECRET')!,
       environment: 'sandbox',
-      redirectUri: `${req.headers.get('origin')}/quickbooks/callback`,
+      redirectUri,
     });
 
     if (action === 'authorize') {
@@ -29,7 +31,7 @@ serve(async (req) => {
           'com.intuit.quickbooks.accounting',
           'com.intuit.quickbooks.payment',
         ],
-        state: 'testState',
+        state: crypto.randomUUID(), // More secure state handling
       });
 
       return new Response(
@@ -56,8 +58,14 @@ serve(async (req) => {
   } catch (error) {
     console.error('QuickBooks OAuth error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: corsHeaders }
+      JSON.stringify({ 
+        error: error.message,
+        code: error.code || 'QUICKBOOKS_AUTH_ERROR'
+      }),
+      { 
+        status: error.status || 500, 
+        headers: corsHeaders 
+      }
     );
   }
 });
