@@ -16,13 +16,15 @@ import {
   Menu,
   Home,
   ChevronRight,
-  X
+  X,
+  Users
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/formatters';
 import MessageThread from '../components/MessageThread';
 import RentPaymentForm from '../components/RentPaymentForm';
 import MaintenanceChat from '../components/MaintenanceChat';
+import RoommateManager from '../components/RoommateManager';
 
 export default function TenantDashboard() {
   const navigate = useNavigate();
@@ -41,6 +43,7 @@ export default function TenantDashboard() {
   const [darkMode, setDarkMode] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showRoommateModal, setShowRoommateModal] = useState(false);
 
   // Demo data
   const [data, setData] = useState({
@@ -108,6 +111,12 @@ export default function TenantDashboard() {
     if (hour < 12) return "Good morning";
     if (hour < 18) return "Good afternoon";
     return "Good evening";
+  };
+
+  const handleSplitPayment = (roommates) => {
+    // Close roommate modal and open payment form
+    setShowRoommateModal(false);
+    setShowPaymentModal(true);
   };
 
   function renderMaintenanceSection() {
@@ -254,7 +263,7 @@ export default function TenantDashboard() {
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   {new Date().toLocaleDateString('en-US', { 
                     weekday: 'long', 
-                    year: 'numeric', 
+                    year: 'numeric',
                     month: 'long', 
                     day: 'numeric' 
                   })}
@@ -329,12 +338,21 @@ export default function TenantDashboard() {
                         {formatCurrency(data.property.rent_amount)}
                       </p>
                     </div>
-                    <button 
-                      onClick={() => setShowPaymentModal(true)}
-                      className="px-4 py-2 bg-[#0078d4] text-white rounded hover:bg-[#106ebe] text-sm font-medium"
-                    >
-                      Make Payment
-                    </button>
+                    <div className="flex space-x-2">
+                      <button 
+                        onClick={() => setShowRoommateModal(true)}
+                        className="px-4 py-2 bg-white dark:bg-[#1b1b1b] text-[#0078d4] border border-[#0078d4] rounded hover:bg-[#0078d4] hover:text-white text-sm font-medium transition-colors flex items-center"
+                      >
+                        <Users className="h-4 w-4 mr-2" />
+                        Split with Roommates
+                      </button>
+                      <button 
+                        onClick={() => setShowPaymentModal(true)}
+                        className="px-4 py-2 bg-[#0078d4] text-white rounded hover:bg-[#106ebe] text-sm font-medium"
+                      >
+                        Make Payment
+                      </button>
+                    </div>
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Due on {getNextPaymentDate()}</p>
                 </div>
@@ -342,7 +360,13 @@ export default function TenantDashboard() {
                 {/* Payment Modal */}
                 {showPaymentModal && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-md w-full">
+                    <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-md w-full relative">
+                      <button
+                        onClick={() => setShowPaymentModal(false)}
+                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-500"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
                       <RentPaymentForm
                         amount={data.property.rent_amount}
                         onSuccess={() => {
@@ -352,6 +376,26 @@ export default function TenantDashboard() {
                           console.error('Payment error:', error);
                         }}
                         setupRecurring={true}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Roommate Modal */}
+                {showRoommateModal && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-4xl w-full relative">
+                      <button
+                        onClick={() => setShowRoommateModal(false)}
+                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-500"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Split Rent with Roommates</h2>
+                      <RoommateManager
+                        tenantId={data.tenant.id}
+                        rentAmount={data.property.rent_amount}
+                        onSplitPayment={handleSplitPayment}
                       />
                     </div>
                   </div>
