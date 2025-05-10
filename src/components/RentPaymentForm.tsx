@@ -10,7 +10,7 @@ interface RentPaymentFormProps {
   setupRecurring?: boolean;
 }
 
-export default function RentPaymentForm({ amount, onSuccess, onError, setupRecurring = false }: RentPaymentFormProps) {
+export RentPaymentForm({ amount, onSuccess, onError, setupRecurring = false }: RentPaymentFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [trx, setTrx] = useState<any>(null);
