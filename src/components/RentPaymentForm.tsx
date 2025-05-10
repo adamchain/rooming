@@ -3,12 +3,6 @@ import { AlertCircle, CreditCard } from 'lucide-react';
 import paymentService from '../services/paymentService';
 import { formatCurrency } from '../utils/formatters';
 
-declare global {
-  interface Window {
-    TRX: any;
-  }
-}
-
 interface RentPaymentFormProps {
   amount: number;
   onSuccess: () => void;
@@ -19,12 +13,18 @@ interface RentPaymentFormProps {
 export default function RentPaymentForm({ amount, onSuccess, onError, setupRecurring = false }: RentPaymentFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [trx, setTrx] = useState<any>(null);
 
   useEffect(() => {
-    // Initialize GETTRX SDK
+    // Load GETTRX SDK
     const script = document.createElement('script');
     script.src = 'https://js.gettrx.com/v1';
     script.async = true;
+    script.onload = () => {
+      // Initialize GETTRX after script loads
+      const trxInstance = window.TRX('pk_rW2wp1rnulRnx7oJQN8V_L-qEplUMSdm-eBQ1R24BkmW51f7ETcmpN0aUAN66dOm');
+      setTrx(trxInstance);
+    };
     document.body.appendChild(script);
 
     return () => {
@@ -34,13 +34,15 @@ export default function RentPaymentForm({ amount, onSuccess, onError, setupRecur
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!trx) {
+      setError('Payment system not initialized');
+      return;
+    }
+
     setError(null);
     setLoading(true);
 
     try {
-      // Initialize GETTRX checkout
-      const trx = window.TRX('pk_rW2wp1rnulRnx7oJQN8V_L-qEplUMSdm-eBQ1R24BkmW51f7ETcmpN0aUAN66dOm');
-      
       const { token } = await trx.createToken({
         mode: 'payment',
         currency: 'usd',
@@ -72,7 +74,7 @@ export default function RentPaymentForm({ amount, onSuccess, onError, setupRecur
   };
 
   return (
-    <div className="bg-white dark:bg-[#252525] p-6 rounded-lg shadow-lg max-w-md w-full">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Pay Rent</h2>
 
       {error && (
@@ -99,7 +101,7 @@ export default function RentPaymentForm({ amount, onSuccess, onError, setupRecur
               type="text"
               value={amount.toFixed(2)}
               disabled
-              className="bg-gray-50 dark:bg-[#1b1b1b] focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 dark:border-[#3b3b3b] rounded-md"
+              className="bg-gray-50 dark:bg-gray-700 focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:text-white"
             />
           </div>
         </div>
@@ -108,7 +110,7 @@ export default function RentPaymentForm({ amount, onSuccess, onError, setupRecur
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Card Information
           </label>
-          <div id="card-element" className="mt-1 p-3 border border-gray-300 dark:border-[#3b3b3b] rounded-md" />
+          <div id="card-element" className="mt-1 p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700" />
         </div>
 
         {setupRecurring && (
@@ -126,15 +128,15 @@ export default function RentPaymentForm({ amount, onSuccess, onError, setupRecur
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !trx}
           className={`w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-            loading
+            loading || !trx
               ? 'bg-indigo-400 dark:bg-indigo-500 cursor-not-allowed'
               : 'bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600'
           } transition-colors`}
         >
           <CreditCard className="h-4 w-4 mr-2" />
-          {loading ? 'Processing...' : `Pay ${formatCurrency(amount)}`}
+          {loading ? 'Processing...' : !trx ? 'Loading...' : `Pay ${formatCurrency(amount)}`}
         </button>
       </form>
     </div>
