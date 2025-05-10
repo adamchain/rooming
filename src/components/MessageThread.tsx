@@ -7,6 +7,7 @@ import { formatDistanceToNow } from 'date-fns';
 interface Message {
   id: string;
   sender_id: string;
+  receiver_id: string;
   content: string;
   created_at: string;
   read: boolean;
@@ -30,25 +31,25 @@ export default function MessageThread({ receiverId, receiverEmail, onClose }: Me
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (user && showThread) {
+    if (user?.id && showThread) {
       loadMessages();
       const interval = setInterval(loadMessages, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }
-  }, [user, showThread]);
+  }, [user?.id, showThread]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const loadMessages = async () => {
-    if (!user) return;
+    if (!user?.id) return;
     
     try {
       const data = await messageService.getMessages();
       setMessages(data.filter(m => 
-        (m.sender_id === user?.id && m.receiver_id === receiverId) ||
-        (m.sender_id === receiverId && m.receiver_id === user?.id)
+        (m.sender_id === user.id && m.receiver_id === receiverId) ||
+        (m.sender_id === receiverId && m.receiver_id === user.id)
       ));
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -63,7 +64,7 @@ export default function MessageThread({ receiverId, receiverEmail, onClose }: Me
     e.preventDefault();
     if (!newMessage.trim() || loading) return;
 
-    if (!user) {
+    if (!user?.id) {
       console.error('User not authenticated');
       alert('You must be logged in to send messages.');
       return;
@@ -81,7 +82,7 @@ export default function MessageThread({ receiverId, receiverEmail, onClose }: Me
     }
   };
 
-  if (!user) {
+  if (!user?.id) {
     return (
       <div className="flex flex-col h-[200px] bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] items-center justify-center">
         <p className="text-gray-600 dark:text-gray-300">Please log in to view messages.</p>
@@ -121,11 +122,11 @@ export default function MessageThread({ receiverId, receiverEmail, onClose }: Me
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                message.sender_id === user?.id
+                message.sender_id === user.id
                   ? 'bg-[#0078d4] text-white'
                   : 'bg-gray-100 dark:bg-[#1b1b1b] text-gray-900 dark:text-gray-100'
               }`}
