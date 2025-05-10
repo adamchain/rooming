@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RentPaymentForm } from '../components/RentPaymentForm';
+import RentPaymentForm from '../components/RentPaymentForm';
 
 export default function TenantDashboard() {
   const [activeTab, setActiveTab] = useState('rent');
