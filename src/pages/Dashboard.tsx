@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageThread } from '../components/MessageThread';
+import MessageThread from '../components/MessageThread';
 
 const Dashboard = ({ data }) => {
   return (
