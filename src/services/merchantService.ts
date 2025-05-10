@@ -21,7 +21,7 @@ class MerchantService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch(`${GETTRX_API_URL}/auth/login`, {
+      const response = await fetch(`${GETTRX_API_URL}/merchants/authenticate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
