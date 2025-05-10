@@ -13,6 +13,11 @@ export default function Financials() {
   const [activeTab, setActiveTab] = useState('overview');
   const [hasMerchantAccount, setHasMerchantAccount] = useState(false);
   const [showMerchantOnboarding, setShowMerchantOnboarding] = useState(false);
+  const [showMerchantSignIn, setShowMerchantSignIn] = useState(false);
+  const [merchantCredentials, setMerchantCredentials] = useState({
+    email: '',
+    password: ''
+  });
 
   useEffect(() => {
     checkConnections();
@@ -55,6 +60,19 @@ export default function Financials() {
     } catch (err) {
       console.error('Error connecting to QuickBooks:', err);
       setError('Failed to connect to QuickBooks');
+    }
+  };
+
+  const handleMerchantSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      await merchantService.signInMerchant(merchantCredentials.email, merchantCredentials.password);
+      setHasMerchantAccount(true);
+      setShowMerchantSignIn(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in to merchant account');
     }
   };
 
@@ -246,10 +264,31 @@ export default function Financials() {
       {activeTab === 'rent' && (
         <div className="flex justify-center">
           {!hasMerchantAccount ? (
-            <MerchantOnboarding onComplete={() => {
-              setHasMerchantAccount(true);
-              setShowMerchantOnboarding(false);
-            }} />
+            <div className="bg-white dark:bg-[#252525] p-6 rounded-lg shadow-lg max-w-md w-full">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Set Up Rent Payments</h2>
+              <div className="space-y-4">
+                <button
+                  onClick={() => setShowMerchantOnboarding(true)}
+                  className="w-full py-3 px-4 bg-[#0078d4] text-white rounded-lg hover:bg-[#106ebe] transition-colors"
+                >
+                  Create New Merchant Account
+                </button>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white dark:bg-[#252525] text-gray-500 dark:text-gray-400">or</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowMerchantSignIn(true)}
+                  className="w-full py-3 px-4 border border-[#0078d4] text-[#0078d4] rounded-lg hover:bg-[#0078d4] hover:text-white transition-colors"
+                >
+                  Sign In to Existing Account
+                </button>
+              </div>
+            </div>
           ) : (
             <div className="text-center">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Merchant Account Active</h3>
@@ -258,6 +297,68 @@ export default function Financials() {
               </p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Merchant Sign In Modal */}
+      {showMerchantSignIn && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-md w-full">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Sign In to GETTRX</h2>
+            <form onSubmit={handleMerchantSignIn} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={merchantCredentials.email}
+                  onChange={(e) => setMerchantCredentials({ ...merchantCredentials, email: e.target.value })}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={merchantCredentials.password}
+                  onChange={(e) => setMerchantCredentials({ ...merchantCredentials, password: e.target.value })}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowMerchantSignIn(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#0078d4] rounded-md hover:bg-[#106ebe]"
+                >
+                  Sign In
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Merchant Onboarding Modal */}
+      {showMerchantOnboarding && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-2xl w-full">
+            <MerchantOnboarding onComplete={() => {
+              setHasMerchantAccount(true);
+              setShowMerchantOnboarding(false);
+            }} />
+          </div>
         </div>
       )}
     </div>
