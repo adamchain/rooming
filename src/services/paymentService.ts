@@ -40,7 +40,7 @@ class PaymentService {
 
   async createPayment(amount: number, paymentToken: string, setupFutureUsage = false) {
     try {
-      const response = await fetch(`${GETTRX_API_URL}/payments`, {
+      const response = await fetch(`${GETTRX_API_URL}/payment-requests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ class PaymentService {
 
   async createRecurringPayment(amount: number, paymentMethodId: string, customerId: string) {
     try {
-      const response = await fetch(`${GETTRX_API_URL}/recurring-payments`, {
+      const response = await fetch(`${GETTRX_API_URL}/payment-requests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,81 +93,6 @@ class PaymentService {
       return await response.json();
     } catch (error) {
       console.error('Error creating recurring payment:', error);
-      throw error;
-    }
-  }
-
-  async createSplitPayment(invoiceId: string, amount: number, contributors: Array<{
-    name: string;
-    email: string;
-    amount: number;
-  }>) {
-    try {
-      // Create split payment record in Supabase
-      const { data: splitPayment, error: splitError } = await this.supabase
-        .from('payment_splits')
-        .insert([{
-          invoice_id: invoiceId,
-          amount,
-          contributors: JSON.stringify(contributors),
-          status: 'pending',
-          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
-        }])
-        .select()
-        .single();
-
-      if (splitError) throw splitError;
-
-      // Create individual payment links for each contributor
-      const contributionPromises = contributors.map(async (contributor) => {
-        const paymentLink = await this.createPaymentLink(contributor.amount);
-        
-        return this.supabase
-          .from('split_contributions')
-          .insert([{
-            split_id: splitPayment.id,
-            name: contributor.name,
-            email: contributor.email,
-            amount: contributor.amount,
-            status: 'pending',
-            payment_link: paymentLink
-          }]);
-      });
-
-      await Promise.all(contributionPromises);
-
-      return splitPayment;
-    } catch (error) {
-      console.error('Error creating split payment:', error);
-      throw error;
-    }
-  }
-
-  private async createPaymentLink(amount: number): Promise<string> {
-    try {
-      const response = await fetch(`${GETTRX_API_URL}/payment-links`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GETTRX_SECRET_KEY}`,
-          'X-Merchant-ID': GETTRX_MERCHANT_ID
-        },
-        body: JSON.stringify({
-          amount: Math.round(amount * 100),
-          currency: 'usd',
-          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-        })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create payment link');
-      }
-
-      const { url } = await response.json();
-      return url;
-    } catch (error) {
-      console.error('Error creating payment link:', error);
       throw error;
     }
   }
