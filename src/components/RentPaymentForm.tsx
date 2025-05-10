@@ -20,6 +20,7 @@ const RentPaymentForm = ({ amount, onSuccess, onError, setupRecurring = false }:
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cardElement, setCardElement] = useState<any>(null);
+  const [trxInitialized, setTrxInitialized] = useState(false);
 
   useEffect(() => {
     // Load GETTRX SDK
@@ -27,40 +28,54 @@ const RentPaymentForm = ({ amount, onSuccess, onError, setupRecurring = false }:
     script.src = 'https://js.gettrx.com/v1';
     script.async = true;
     script.onload = () => {
-      // Initialize GETTRX after script loads
-      const trx = window.TRX('pk_rW2wp1rnulRnx7oJQN8V_L-qEplUMSdm-eBQ1R24BkmW51f7ETcmpN0aUAN66dOm');
-      
-      // Create card element
-      const element = trx.createElement('card', {
-        style: {
-          base: {
-            fontSize: '16px',
-            color: '#32325d',
-            '::placeholder': {
-              color: '#aab7c4'
+      try {
+        // Initialize GETTRX after script loads
+        const trx = window.TRX('pk_rW2wp1rnulRnx7oJQN8V_L-qEplUMSdm-eBQ1R24BkmW51f7ETcmpN0aUAN66dOm');
+        
+        // Create card element
+        const element = trx.createElement('card', {
+          style: {
+            base: {
+              fontSize: '16px',
+              color: '#32325d',
+              '::placeholder': {
+                color: '#aab7c4'
+              }
+            },
+            invalid: {
+              color: '#fa755a',
+              iconColor: '#fa755a'
             }
-          },
-          invalid: {
-            color: '#fa755a',
-            iconColor: '#fa755a'
           }
-        }
-      });
+        });
 
-      // Mount card element
-      element.mount('#card-element');
-      setCardElement(element);
+        // Mount card element
+        element.mount('#card-element');
+        setCardElement(element);
+        setTrxInitialized(true);
+      } catch (err) {
+        console.error('Error initializing GETTRX:', err);
+        setError('Failed to initialize payment system');
+      }
     };
+
+    script.onerror = () => {
+      setError('Failed to load payment system');
+      setLoading(false);
+    };
+
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cardElement) {
+    if (!cardElement || !trxInitialized) {
       setError('Payment system not initialized');
       return;
     }
@@ -154,15 +169,15 @@ const RentPaymentForm = ({ amount, onSuccess, onError, setupRecurring = false }:
 
         <button
           type="submit"
-          disabled={loading || !cardElement}
+          disabled={loading || !trxInitialized}
           className={`w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-            loading || !cardElement
+            loading || !trxInitialized
               ? 'bg-indigo-400 dark:bg-indigo-500 cursor-not-allowed'
               : 'bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600'
           } transition-colors`}
         >
           <CreditCard className="h-4 w-4 mr-2" />
-          {loading ? 'Processing...' : !cardElement ? 'Loading...' : `Pay ${formatCurrency(amount)}`}
+          {loading ? 'Processing...' : !trxInitialized ? 'Loading...' : `Pay ${formatCurrency(amount)}`}
         </button>
       </form>
     </div>
