@@ -21,6 +21,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/formatters';
 import MessageThread from '../components/MessageThread';
+import RentPaymentForm from '../components/RentPaymentForm';
 
 export default function TenantDashboard() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ export default function TenantDashboard() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [darkMode, setDarkMode] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Demo data
   const [data, setData] = useState({
@@ -314,12 +316,35 @@ export default function TenantDashboard() {
                     {formatCurrency(data.property.rent_amount)}
                   </p>
                 </div>
-                <button className="px-4 py-2 bg-[#0078d4] text-white rounded hover:bg-[#106ebe] text-sm font-medium">
+                <button 
+                  onClick={() => setShowPaymentModal(true)}
+                  className="px-4 py-2 bg-[#0078d4] text-white rounded hover:bg-[#106ebe] text-sm font-medium"
+                >
                   Make Payment
                 </button>
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Due on {getNextPaymentDate()}</p>
             </div>
+
+            {/* Payment Modal */}
+            {showPaymentModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-md w-full">
+                  <RentPaymentForm
+                    amount={data.property.rent_amount}
+                    onSuccess={() => {
+                      setShowPaymentModal(false);
+                      // Optionally show success message or refresh data
+                    }}
+                    onError={(error) => {
+                      console.error('Payment error:', error);
+                      // Handle error (error message is shown by the form component)
+                    }}
+                    setupRecurring={true}
+                  />
+                </div>
+              </div>
+            )}
           </main>
         </div>
       </div>
