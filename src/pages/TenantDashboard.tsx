@@ -12,3 +12,5 @@
     />
   </div>
 )}
+
+export default
