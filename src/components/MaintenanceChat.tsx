@@ -173,11 +173,12 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
       <div className="px-4 py-3 border-b border-gray-700 flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <Bot className="h-5 w-5 text-blue-500" />
-          <h3 className="text-lg font-medium">Maintenance Assistant</h3>
+          <h3 className="text-lg font-medium text-white">Maintenance Assistant</h3>
         </div>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-300"
+          className="text-gray-400 hover:text-gray-300 transition-colors"
+          aria-label="Close maintenance chat"
         >
           <X className="h-5 w-5" />
         </button>
