@@ -57,6 +57,12 @@ export default function MessageThread({ receiverId, receiverEmail }: MessageThre
     e.preventDefault();
     if (!newMessage.trim() || loading) return;
 
+    if (!user) {
+      console.error('User not authenticated');
+      alert('You must be logged in to send messages.');
+      return;
+    }
+
     setLoading(true);
     try {
       await messageService.sendMessage(receiverId, newMessage.trim());
