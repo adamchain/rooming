@@ -38,6 +38,8 @@ export default function MessageThread({ receiverId, receiverEmail }: MessageThre
   }, [messages]);
 
   const loadMessages = async () => {
+    if (!user) return; // Early return if no user is authenticated
+    
     try {
       const data = await messageService.getMessages();
       setMessages(data.filter(m => 
@@ -74,6 +76,15 @@ export default function MessageThread({ receiverId, receiverEmail }: MessageThre
       setLoading(false);
     }
   };
+
+  // If no user is authenticated, show a message instead of the chat interface
+  if (!user) {
+    return (
+      <div className="flex flex-col h-[600px] bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] items-center justify-center">
+        <p className="text-gray-600 dark:text-gray-300">Please log in to view messages.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[600px] bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b]">
