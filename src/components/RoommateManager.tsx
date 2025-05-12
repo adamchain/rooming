@@ -34,17 +34,21 @@ export default function RoommateManager({ tenantId, rentAmount, onSplitPayment }
 
   const loadRoommates = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error: fetchError } = await supabase
         .from('roommates')
         .select('*')
         .eq('tenant_id', tenantId)
         .order('created_at');
 
-      if (error) throw error;
+      if (fetchError) {
+        console.error('Error fetching roommates:', fetchError);
+        throw new Error(fetchError.message || 'Failed to load roommates');
+      }
+      
       setRoommates(data || []);
     } catch (err) {
       console.error('Error loading roommates:', err);
-      setError('Failed to load roommates');
+      setError(err instanceof Error ? err.message : 'Failed to load roommates');
     } finally {
       setLoading(false);
     }
@@ -61,7 +65,7 @@ export default function RoommateManager({ tenantId, rentAmount, onSplitPayment }
         throw new Error('Total share percentage cannot exceed 100%');
       }
 
-      const { data, error } = await supabase
+      const { data, error: insertError } = await supabase
         .from('roommates')
         .insert([{
           tenant_id: tenantId,
@@ -73,7 +77,14 @@ export default function RoommateManager({ tenantId, rentAmount, onSplitPayment }
         .select()
         .single();
 
-      if (error) throw error;
+      if (insertError) {
+        console.error('Supabase error adding roommate:', insertError);
+        throw new Error(insertError.message || 'Failed to add roommate');
+      }
+
+      if (!data) {
+        throw new Error('No data returned from roommate insertion');
+      }
 
       setRoommates([...roommates, data]);
       setShowAddForm(false);
@@ -86,17 +97,20 @@ export default function RoommateManager({ tenantId, rentAmount, onSplitPayment }
 
   const handleRemoveRoommate = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error: deleteError } = await supabase
         .from('roommates')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (deleteError) {
+        console.error('Supabase error removing roommate:', deleteError);
+        throw new Error(deleteError.message || 'Failed to remove roommate');
+      }
 
       setRoommates(roommates.filter(r => r.id !== id));
     } catch (err) {
       console.error('Error removing roommate:', err);
-      setError('Failed to remove roommate');
+      setError(err instanceof Error ? err.message : 'Failed to remove roommate');
     }
   };
 
