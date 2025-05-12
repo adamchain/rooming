@@ -88,7 +88,7 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
                 onMouseLeave={() => setHoveredProperty(null)}
               >
                 <div className="relative">
-                  <div className="flex-shrink-0 bg-[#0078d4] dark:bg-[#0078d4] rounded-full p-2 shadow-md transition-transform hover:scale-110">
+                  <div className="flex-shrink-0 bg-black dark:bg-[#0078d4] rounded-full p-2 shadow-md transition-transform hover:scale-110">
                     <Building2 className="h-6 w-6 text-white dark:text-white cursor-pointer" />
                   </div>
                   
