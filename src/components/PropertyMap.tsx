@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Map, { Marker, Popup } from 'react-map-gl';
 import { Building2, Wrench } from 'lucide-react';
 import { formatCurrency } from '../utils/formatters';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface Property {
   id: string;
@@ -42,8 +43,9 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
         mapboxAccessToken="pk.eyJ1IjoiZGVtby11c2VyIiwiYSI6ImNscnhkN2FjaTBhOXEya3BlZGxqZWZ0em8ifQ.6QR7RPEUVcKRkHKpKxwqww"
         {...viewport}
         onMove={evt => setViewport(evt.viewState)}
-        mapStyle="mapbox://styles/mapbox/dark-v11"
+        mapStyle="mapbox://styles/mapbox/light-v11"
         style={{ width: '100%', height: '100%' }}
+        reuseMaps
       >
         {propertiesWithCoords.map((property) => (
           <Marker
@@ -55,8 +57,8 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
               setSelectedProperty(property);
             }}
           >
-            <div className="cursor-pointer">
-              <div className="p-2 rounded-full bg-[#0078d4] text-white">
+            <div className="cursor-pointer transform transition-transform hover:scale-110">
+              <div className="p-2 rounded-full bg-[#0078d4] text-white shadow-lg">
                 <Building2 className="h-5 w-5" />
               </div>
             </div>
@@ -71,6 +73,7 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
             closeButton={true}
             closeOnClick={false}
             className="property-popup"
+            offset={25}
           >
             <div className="p-2">
               <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
@@ -82,16 +85,28 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500 dark:text-gray-400">Occupancy</span>
-                  <span className="text-xs font-medium text-gray-900 dark:text-white">
-                    {selectedProperty.occupancyRate || 0}%
-                  </span>
+                  <div className="flex items-center">
+                    <div className="w-16 h-1.5 bg-gray-200 rounded-full mr-2">
+                      <div 
+                        className="h-full bg-green-500 rounded-full"
+                        style={{ width: `${selectedProperty.occupancyRate}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-gray-900 dark:text-white">
+                      {selectedProperty.occupancyRate}%
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500 dark:text-gray-400">Maintenance</span>
                   <div className="flex items-center">
-                    <Wrench className="h-3 w-3 text-orange-500 mr-1" />
+                    <Wrench className={`h-3 w-3 mr-1 ${
+                      selectedProperty.maintenanceRequests > 0 
+                        ? 'text-orange-500' 
+                        : 'text-green-500'
+                    }`} />
                     <span className="text-xs font-medium text-gray-900 dark:text-white">
-                      {selectedProperty.maintenanceRequests || 0} open
+                      {selectedProperty.maintenanceRequests} open
                     </span>
                   </div>
                 </div>
