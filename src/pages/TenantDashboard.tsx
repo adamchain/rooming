@@ -18,7 +18,9 @@ import {
   ChevronRight,
   X,
   Users,
-  Clock
+  Clock,
+  Bot,
+  FileUp
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/formatters';
@@ -27,7 +29,6 @@ import RentPaymentForm from '../components/RentPaymentForm';
 import MaintenanceChat from '../components/MaintenanceChat';
 import RoommateManager from '../components/RoommateManager';
 import Documents from '../pages/Documents';
-import Maintenance from '../pages/Maintenance';
 
 // Mock payment history data
 const MOCK_PAYMENT_HISTORY = [
@@ -227,6 +228,61 @@ export default function TenantDashboard() {
     );
   };
 
+  const renderMaintenanceSection = () => {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* AI Chat Option */}
+          <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
+            <div className="flex items-center mb-4">
+              <Bot className="h-8 w-8 text-[#0078d4] mr-3" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                Maintenance Assistant
+              </h3>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Chat with our AI assistant to diagnose issues and get maintenance help.
+            </p>
+            <button
+              onClick={() => setShowMaintenanceChat(true)}
+              className="w-full flex items-center justify-center px-4 py-2 bg-[#0078d4] hover:bg-[#106ebe] text-white rounded transition-colors"
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Start Chat
+            </button>
+          </div>
+
+          {/* Submit Request Option */}
+          <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
+            <div className="flex items-center mb-4">
+              <FileUp className="h-8 w-8 text-[#0078d4] mr-3" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                Submit Request
+              </h3>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Submit a formal maintenance request directly to property management.
+            </p>
+            <button
+              onClick={() => setShowMaintenanceForm(true)}
+              className="w-full flex items-center justify-center px-4 py-2 border border-[#0078d4] text-[#0078d4] hover:bg-[#0078d4] hover:text-white rounded transition-colors"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Submit Request
+            </button>
+          </div>
+        </div>
+
+        {showMaintenanceChat && (
+          <MaintenanceChat
+            propertyId={data.property.id}
+            onClose={() => setShowMaintenanceChat(false)}
+          />
+        )}
+      </div>
+    );
+  };
+
   const renderHomeSection = () => {
     return (
       <>
@@ -319,7 +375,7 @@ export default function TenantDashboard() {
       case 'payments':
         return renderPaymentsSection();
       case 'maintenance':
-        return <Maintenance />;
+        return renderMaintenanceSection();
       case 'documents':
         return <Documents />;
       default:
