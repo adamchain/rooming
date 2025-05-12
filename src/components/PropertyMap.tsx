@@ -22,13 +22,7 @@ interface PropertyMapProps {
 
 export default function PropertyMap({ properties }: PropertyMapProps) {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-  const [viewport, setViewport] = useState({
-    latitude: 37.7749,
-    longitude: -122.4194,
-    zoom: 11
-  });
-
-  // Demo coordinates for properties
+  // Calculate the center of the properties
   const propertiesWithCoords = properties.map((property, index) => ({
     ...property,
     coordinates: {
@@ -36,6 +30,38 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
       lng: -122.4194 + (index * 0.01)
     }
   }));
+
+  // Determine initial viewport based on property coordinates
+  const calculateViewport = () => {
+    if (propertiesWithCoords.length === 0) {
+      return {
+        latitude: 37.7749,
+        longitude: -122.4194,
+        zoom: 11
+      };
+    }
+
+    // Find the bounds of the properties
+    const lats = propertiesWithCoords.map(p => p.coordinates?.lat || 0);
+    const lngs = propertiesWithCoords.map(p => p.coordinates?.lng || 0);
+
+    const minLat = Math.min(...lats);
+    const maxLat = Math.max(...lats);
+    const minLng = Math.min(...lngs);
+    const maxLng = Math.max(...lngs);
+
+    // Calculate the center
+    const centerLat = (minLat + maxLat) / 2;
+    const centerLng = (minLng + maxLng) / 2;
+
+    return {
+      latitude: centerLat,
+      longitude: centerLng,
+      zoom: propertiesWithCoords.length === 1 ? 13 : 12
+    };
+  };
+
+  const [viewport, setViewport] = useState(calculateViewport());
 
   return (
     <div className="bg-white dark:bg-[#252525] overflow-hidden rounded-lg border border-gray-200 dark:border-[#3b3b3b]">
