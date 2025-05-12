@@ -169,15 +169,15 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-[#1e2433] rounded-lg">
-      <div className="px-4 py-3 border-b border-gray-700 flex justify-between items-center">
+    <div className="flex flex-col h-[600px] bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] shadow-lg">
+      <div className="px-4 py-3 border-b border-gray-200 dark:border-[#3b3b3b] flex justify-between items-center bg-gray-50 dark:bg-[#1b1b1b]">
         <div className="flex items-center space-x-2">
-          <Bot className="h-5 w-5 text-blue-500" />
-          <h3 className="text-lg font-medium text-white">Maintenance Assistant</h3>
+          <Bot className="h-5 w-5 text-[#0078d4]" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Maintenance Assistant</h3>
         </div>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-300 transition-colors"
+          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
           aria-label="Close maintenance chat"
         >
           <X className="h-5 w-5" />
@@ -186,15 +186,15 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {!selectedCategory ? (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {MAINTENANCE_CATEGORIES.map((category) => (
               <button
                 key={category.id}
                 onClick={() => handleCategorySelect(category.id)}
-                className="bg-[#252d40] p-4 rounded-lg hover:bg-[#2a324a] transition-colors text-left"
+                className="bg-white dark:bg-[#1b1b1b] p-4 rounded-lg border border-gray-200 dark:border-[#3b3b3b] hover:border-[#0078d4] dark:hover:border-[#0078d4] transition-colors text-left"
               >
-                <h4 className="font-medium mb-1">{category.name}</h4>
-                <p className="text-sm text-gray-400">{category.description}</p>
+                <h4 className="font-medium text-gray-900 dark:text-white mb-1">{category.name}</h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{category.description}</p>
               </button>
             ))}
           </div>
@@ -208,8 +208,8 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
                 <div
                   className={`max-w-[80%] rounded-lg px-4 py-2 ${
                     message.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-[#252d40] text-gray-100'
+                      ? 'bg-[#0078d4] text-white'
+                      : 'bg-gray-100 dark:bg-[#1b1b1b] text-gray-900 dark:text-white'
                   }`}
                 >
                   <p className="text-sm">{message.content}</p>
@@ -230,11 +230,11 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-[#252d40] rounded-lg px-4 py-2">
+                <div className="bg-gray-100 dark:bg-[#1b1b1b] rounded-lg px-4 py-2">
                   <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
+                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce delay-100" />
+                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce delay-200" />
                   </div>
                 </div>
               </div>
@@ -244,8 +244,8 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
       </div>
 
       {error && (
-        <div className="px-4 py-2 bg-red-900/50">
-          <div className="flex items-center text-red-400">
+        <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20">
+          <div className="flex items-center text-red-800 dark:text-red-300">
             <AlertTriangle className="h-4 w-4 mr-2" />
             <span className="text-sm">{error}</span>
           </div>
@@ -253,19 +253,19 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
       )}
 
       {selectedCategory && (
-        <form onSubmit={handleSubmit} className="p-4 border-t border-gray-700">
+        <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200 dark:border-[#3b3b3b] bg-white dark:bg-[#252525]">
           {attachments.length > 0 && (
             <div className="mb-2 flex flex-wrap gap-2">
               {attachments.map((file, index) => (
                 <div
                   key={index}
-                  className="bg-[#252d40] rounded px-2 py-1 flex items-center"
+                  className="bg-gray-100 dark:bg-[#1b1b1b] rounded px-2 py-1 flex items-center"
                 >
-                  <span className="text-xs mr-2">{file.name}</span>
+                  <span className="text-xs text-gray-700 dark:text-gray-300 mr-2">{file.name}</span>
                   <button
                     type="button"
                     onClick={() => setAttachments(prev => prev.filter((_, i) => i !== index))}
-                    className="text-gray-400 hover:text-red-400"
+                    className="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -275,23 +275,23 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
           )}
           <div className="flex space-x-2">
             <div className="flex space-x-2">
-              <label className="cursor-pointer p-2 hover:bg-[#252d40] rounded-lg transition-colors">
+              <label className="cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-[#1b1b1b] rounded-lg transition-colors">
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleAttachFiles}
                   className="hidden"
                 />
-                <Camera className="h-5 w-5 text-gray-400" />
+                <Camera className="h-5 w-5 text-gray-500 dark:text-gray-400" />
               </label>
-              <label className="cursor-pointer p-2 hover:bg-[#252d40] rounded-lg transition-colors">
+              <label className="cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-[#1b1b1b] rounded-lg transition-colors">
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
                   onChange={handleAttachFiles}
                   className="hidden"
                 />
-                <Paperclip className="h-5 w-5 text-gray-400" />
+                <Paperclip className="h-5 w-5 text-gray-500 dark:text-gray-400" />
               </label>
             </div>
             <input
@@ -299,7 +299,7 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message..."
-              className="flex-1 bg-[#252d40] rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 bg-gray-100 dark:bg-[#1b1b1b] rounded-lg px-4 py-2 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0078d4] border-0"
               disabled={loading}
             />
             <button
@@ -307,9 +307,9 @@ export default function MaintenanceChat({ onClose, propertyId }: MaintenanceChat
               disabled={loading || (!input.trim() && attachments.length === 0)}
               className={`p-2 rounded-lg ${
                 loading || (!input.trim() && attachments.length === 0)
-                  ? 'bg-gray-700 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+                  ? 'bg-gray-200 dark:bg-gray-700 cursor-not-allowed'
+                  : 'bg-[#0078d4] hover:bg-[#106ebe] text-white'
+              } transition-colors`}
             >
               <Send className="h-5 w-5" />
             </button>
