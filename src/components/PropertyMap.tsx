@@ -27,6 +27,25 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
     longitude: -122.4194,
     zoom: 11
   });
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
+
+  // Update dark mode state when theme changes
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          setDarkMode(document.documentElement.classList.contains('dark'));
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Demo coordinates for properties
   const propertiesWithCoords = properties.map((property, index) => ({
@@ -43,7 +62,7 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
         mapboxAccessToken="pk.eyJ1IjoiZGVtby11c2VyIiwiYSI6ImNscnhkN2FjaTBhOXEya3BlZGxqZWZ0em8ifQ.6QR7RPEUVcKRkHKpKxwqww"
         {...viewport}
         onMove={evt => setViewport(evt.viewState)}
-        mapStyle="mapbox://styles/mapbox/light-v11"
+        mapStyle={darkMode ? "mapbox://styles/mapbox/dark-v11" : "mapbox://styles/mapbox/light-v11"}
         style={{ width: '100%', height: '100%' }}
         reuseMaps
       >
@@ -86,7 +105,7 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500 dark:text-gray-400">Occupancy</span>
                   <div className="flex items-center">
-                    <div className="w-16 h-1.5 bg-gray-200 rounded-full mr-2">
+                    <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mr-2">
                       <div 
                         className="h-full bg-green-500 rounded-full"
                         style={{ width: `${selectedProperty.occupancyRate}%` }}
