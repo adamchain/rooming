@@ -17,7 +17,8 @@ import {
   Home,
   ChevronRight,
   X,
-  Users
+  Users,
+  Clock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/formatters';
@@ -27,7 +28,34 @@ import MaintenanceChat from '../components/MaintenanceChat';
 import RoommateManager from '../components/RoommateManager';
 import Documents from '../pages/Documents';
 import Maintenance from '../pages/Maintenance';
-import Payments from '../pages/Payments';
+
+// Mock payment history data
+const MOCK_PAYMENT_HISTORY = [
+  {
+    id: '1',
+    date: '2024-04-01',
+    amount: 1250,
+    status: 'paid',
+    type: 'Rent Payment',
+    reference: 'APR-2024'
+  },
+  {
+    id: '2',
+    date: '2024-03-01',
+    amount: 1250,
+    status: 'paid',
+    type: 'Rent Payment',
+    reference: 'MAR-2024'
+  },
+  {
+    id: '3',
+    date: '2024-02-01',
+    amount: 1250,
+    status: 'paid',
+    type: 'Rent Payment',
+    reference: 'FEB-2024'
+  }
+];
 
 export default function TenantDashboard() {
   const navigate = useNavigate();
@@ -116,6 +144,87 @@ export default function TenantDashboard() {
   const handleSplitPayment = (roommates) => {
     setShowRoommateModal(false);
     setShowPaymentModal(true);
+  };
+
+  const renderPaymentsSection = () => {
+    return (
+      <div className="space-y-6">
+        {/* Next Payment Card */}
+        <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Next Payment Due</p>
+              <p className="text-2xl font-semibold text-[#0078d4]">
+                {formatCurrency(data.property.rent_amount)}
+              </p>
+            </div>
+            <div className="flex space-x-2">
+              <button 
+                onClick={() => setShowRoommateModal(true)}
+                className="px-4 py-2 bg-white dark:bg-[#1b1b1b] text-[#0078d4] border border-[#0078d4] rounded hover:bg-[#0078d4] hover:text-white text-sm font-medium transition-colors flex items-center"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Split with Roommates
+              </button>
+              <button 
+                onClick={() => setShowPaymentModal(true)}
+                className="px-4 py-2 bg-[#0078d4] text-white rounded hover:bg-[#106ebe] text-sm font-medium"
+              >
+                Make Payment
+              </button>
+            </div>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Due on {getNextPaymentDate()}</p>
+        </div>
+
+        {/* Payment History */}
+        <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-[#3b3b3b]">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Payment History</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-[#3b3b3b]">
+              <thead className="bg-gray-50 dark:bg-[#1b1b1b]">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reference</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-[#252525] divide-y divide-gray-200 dark:divide-[#3b3b3b]">
+                {MOCK_PAYMENT_HISTORY.map((payment) => (
+                  <tr key={payment.id} className="hover:bg-gray-50 dark:hover:bg-[#2d2d2d] transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {new Date(payment.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {payment.type}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {payment.reference}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {formatCurrency(payment.amount)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        payment.status === 'paid' 
+                          ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
+                          : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300'
+                      }`}>
+                        {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const renderHomeSection = () => {
@@ -208,7 +317,7 @@ export default function TenantDashboard() {
       case 'home':
         return renderHomeSection();
       case 'payments':
-        return <Payments />;
+        return renderPaymentsSection();
       case 'maintenance':
         return <Maintenance />;
       case 'documents':
