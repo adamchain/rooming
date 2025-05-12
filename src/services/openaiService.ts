@@ -4,14 +4,24 @@ class OpenAIService {
   private client: OpenAI;
 
   constructor() {
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    
+    if (!apiKey) {
+      console.warn('OpenAI API key not found in environment variables');
+    }
+
     this.client = new OpenAI({
-      apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+      apiKey: apiKey || 'dummy-key',
       dangerouslyAllowBrowser: true,
     });
   }
 
   async generateText(prompt: string): Promise<string> {
     try {
+      if (!import.meta.env.VITE_OPENAI_API_KEY) {
+        throw new Error('OpenAI API key not configured');
+      }
+
       const response = await this.client.chat.completions.create({
         model: "gpt-4",
         messages: [{ role: "user", content: prompt }],
@@ -22,12 +32,16 @@ class OpenAIService {
       return response.choices[0]?.message?.content || '';
     } catch (error) {
       console.error('Error generating text:', error);
-      throw new Error('Failed to generate text');
+      throw new Error('Failed to generate text. Please check your API configuration.');
     }
   }
 
   async analyzeDocument(text: string): Promise<string> {
     try {
+      if (!import.meta.env.VITE_OPENAI_API_KEY) {
+        throw new Error('OpenAI API key not configured');
+      }
+
       const prompt = `
         Please analyze the following document and provide key insights:
         "${text}"
@@ -43,12 +57,16 @@ class OpenAIService {
       return await this.generateText(prompt);
     } catch (error) {
       console.error('Error analyzing document:', error);
-      throw new Error('Failed to analyze document');
+      throw new Error('Failed to analyze document. Please check your API configuration.');
     }
   }
 
   async answerDocumentQuestion(context: string, question: string): Promise<string> {
     try {
+      if (!import.meta.env.VITE_OPENAI_API_KEY) {
+        throw new Error('OpenAI API key not configured');
+      }
+
       const prompt = `
         Context: ${context}
         Question: ${question}
@@ -58,7 +76,7 @@ class OpenAIService {
       return await this.generateText(prompt);
     } catch (error) {
       console.error('Error answering question:', error);
-      throw new Error('Failed to answer question');
+      throw new Error('Failed to answer question. Please check your API configuration.');
     }
   }
 }
