@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, ArrowUpRight, AlertTriangle } from 'lucide-react';
+import { Bell, DollarSign, TrendingUp, ArrowUpRight, AlertCircle, UserPlus, X } from 'lucide-react';
 import financialService from '../services/financialService';
 import merchantService from '../services/merchantService';
 import { formatCurrency } from '../utils/formatters';
@@ -86,36 +86,35 @@ export default function Financials() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="sm:flex sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Financial Overview</h1>
-        <div className="flex space-x-4">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'overview'
-                ? 'bg-[#0078d4] text-white'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`}
-          >
-            Overview
-          </button>
+        <div className="mt-4 sm:mt-0 space-x-3">
+          {!hasMerchantAccount && (
+            <button
+              onClick={() => setShowMerchantOnboarding(true)}
+              className="inline-flex items-center px-4 py-2 bg-white dark:bg-[#1b1b1b] text-[#0078d4] border border-[#0078d4] hover:bg-[#0078d4] hover:text-white rounded transition-colors"
+            >
+              <DollarSign className="h-4 w-4 mr-2" />
+              Set Up Payments
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('rent')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`inline-flex items-center px-4 py-2 rounded transition-colors ${
               activeTab === 'rent'
                 ? 'bg-[#0078d4] text-white'
                 : 'bg-white dark:bg-[#1b1b1b] text-[#0078d4] border border-[#0078d4] hover:bg-[#0078d4] hover:text-white'
             }`}
           >
-            Rent
+            Create Invoice
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="rounded bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4">
+        <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
           <div className="flex">
-            <AlertTriangle className="h-5 w-5 text-red-500" />
+            <AlertCircle className="h-5 w-5 text-red-400" />
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800 dark:text-red-300">{error}</h3>
             </div>
@@ -302,9 +301,17 @@ export default function Financials() {
 
       {/* Merchant Sign In Modal */}
       {showMerchantSignIn && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Sign In to GETTRX</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Sign In to GETTRX</h2>
+              <button
+                onClick={() => setShowMerchantSignIn(false)}
+                className="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
             <form onSubmit={handleMerchantSignIn} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -352,12 +359,15 @@ export default function Financials() {
 
       {/* Merchant Onboarding Modal */}
       {showMerchantOnboarding && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-2xl w-full">
-            <MerchantOnboarding onComplete={() => {
-              setHasMerchantAccount(true);
-              setShowMerchantOnboarding(false);
-            }} />
+            <MerchantOnboarding
+              onComplete={() => {
+                setHasMerchantAccount(true);
+                setShowMerchantOnboarding(false);
+              }}
+              onClose={() => setShowMerchantOnboarding(false)}
+            />
           </div>
         </div>
       )}
