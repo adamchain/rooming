@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Plus, Pencil, Trash2, AlertTriangle } from 'lucide-react';
+import { Building2, Plus, Pencil, Trash2, AlertTriangle, X } from 'lucide-react';
 import PropertyFeatures from '../components/PropertyFeatures';
 import propertyService from '../services/propertyService';
 
@@ -93,15 +93,13 @@ export default function Properties() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Properties</h1>
-        <div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-[#0078d4] hover:bg-[#106ebe] text-white font-medium rounded transition-colors"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Property
-          </button>
-        </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="inline-flex items-center px-4 py-2 bg-[#0078d4] hover:bg-[#106ebe] text-white font-medium rounded transition-colors"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Property
+        </button>
       </div>
 
       {error && (
@@ -115,10 +113,9 @@ export default function Properties() {
         </div>
       )}
 
-      {/* Property Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {properties.map((property) => (
-          <div key={property.id} className="bg-white dark:bg-[#252525] rounded border border-gray-200 dark:border-[#3b3b3b] transition-colors duration-200 overflow-hidden">
+          <div key={property.id} className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] transition-colors duration-200">
             <div className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -158,63 +155,27 @@ export default function Properties() {
         ))}
       </div>
 
-      {/* Add Property Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-[#252525] rounded p-6 max-w-md w-full border border-gray-200 dark:border-[#3b3b3b] shadow-lg">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Add New Property</h2>
-            <form onSubmit={handleAddProperty}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Property Name (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={newProperty.name}
-                    onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })}
-                    className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    value={newProperty.address}
-                    onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })}
-                    required
-                    className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
-                  />
-                </div>
-              </div>
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded hover:bg-gray-50 dark:hover:bg-[#292929] transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-[#0078d4] hover:bg-[#106ebe] rounded transition-colors"
-                >
-                  Add Property
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Add/Edit Property Modal */}
+      {(showAddModal || editingProperty) && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-[#252525] rounded-lg p-6 max-w-md w-full border border-gray-200 dark:border-[#3b3b3b] shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">
+                {editingProperty ? 'Edit Property' : 'Add New Property'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowAddModal(false);
+                  setEditingProperty(null);
+                }}
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 transition-colors"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
-      {/* Edit Property Modal */}
-      {editingProperty && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-[#252525] rounded p-6 max-w-md w-full border border-gray-200 dark:border-[#3b3b3b] shadow-lg">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Edit Property</h2>
-            <form onSubmit={handleUpdateProperty}>
+            <form onSubmit={editingProperty ? handleUpdateProperty : handleAddProperty}>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -222,8 +183,11 @@ export default function Properties() {
                   </label>
                   <input
                     type="text"
-                    value={editingProperty.name || ''}
-                    onChange={(e) => setEditingProperty({ ...editingProperty, name: e.target.value })}
+                    value={editingProperty?.name || newProperty.name}
+                    onChange={(e) => editingProperty
+                      ? setEditingProperty({ ...editingProperty, name: e.target.value })
+                      : setNewProperty({ ...newProperty, name: e.target.value })
+                    }
                     className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
                   />
                 </div>
@@ -233,8 +197,11 @@ export default function Properties() {
                   </label>
                   <input
                     type="text"
-                    value={editingProperty.address}
-                    onChange={(e) => setEditingProperty({ ...editingProperty, address: e.target.value })}
+                    value={editingProperty?.address || newProperty.address}
+                    onChange={(e) => editingProperty
+                      ? setEditingProperty({ ...editingProperty, address: e.target.value })
+                      : setNewProperty({ ...newProperty, address: e.target.value })
+                    }
                     required
                     className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
                   />
@@ -243,7 +210,10 @@ export default function Properties() {
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setEditingProperty(null)}
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setEditingProperty(null);
+                  }}
                   className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded hover:bg-gray-50 dark:hover:bg-[#292929] transition-colors"
                 >
                   Cancel
@@ -252,7 +222,7 @@ export default function Properties() {
                   type="submit"
                   className="px-4 py-2 text-sm font-medium text-white bg-[#0078d4] hover:bg-[#106ebe] rounded transition-colors"
                 >
-                  Save Changes
+                  {editingProperty ? 'Save Changes' : 'Add Property'}
                 </button>
               </div>
             </form>
