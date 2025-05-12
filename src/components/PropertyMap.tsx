@@ -88,54 +88,42 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
                 onMouseLeave={() => setHoveredProperty(null)}
               >
                 <div className="relative">
-                  <div className="flex-shrink-0 bg-black dark:bg-black/20 rounded-full p-2 shadow-md">
+                  <div className="flex-shrink-0 bg-[#0078d4] dark:bg-[#0078d4] rounded-full p-2 shadow-md transition-transform hover:scale-110">
                     <Building2 className="h-6 w-6 text-white dark:text-white cursor-pointer" />
                   </div>
                   
                   {/* Hover Card */}
                   {hoveredProperty === property && (
-                    <div className="absolute z-50 top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white dark:bg-[#2c2c2c] rounded-lg shadow-lg border border-gray-200 dark:border-[#3b3b3b] p-4">
-                      <div className="flex items-center mb-2">
-                        <Building2 className="h-5 w-5 mr-2 text-green-600 dark:text-green-400" />
+                    <div className="absolute z-50 top-full left-1/2 transform -translate-x-1/2 mt-2 w-64 bg-white dark:bg-[#1b1b1b] rounded-lg shadow-lg border border-gray-200 dark:border-[#3b3b3b] p-4">
+                      <div className="flex items-center mb-3">
+                        <Building2 className="h-5 w-5 mr-2 text-[#0078d4]" />
                         <h3 className="font-semibold text-gray-900 dark:text-white truncate">{property.name}</h3>
                       </div>
                       
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <MapPin className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                            <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{property.address}</span>
-                          </div>
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                          <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                          <span className="truncate">{property.address}</span>
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 bg-green-100 dark:bg-green-900/20 rounded-full p-1 mr-2">
-                              <Building2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+                            <div className="flex-shrink-0 bg-[#0078d4]/10 rounded-full p-1 mr-2">
+                              <Building2 className="h-4 w-4 text-[#0078d4]" />
                             </div>
                             <span className="text-sm text-gray-900 dark:text-white">Occupancy</span>
                           </div>
-                          <span className="font-semibold text-green-600">{property.occupancyRate}%</span>
+                          <span className="font-semibold text-[#0078d4]">{property.occupancyRate}%</span>
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 bg-orange-100 dark:bg-orange-900/20 rounded-full p-1 mr-2">
-                              <Wrench className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                            <div className="flex-shrink-0 bg-[#0078d4]/10 rounded-full p-1 mr-2">
+                              <Wrench className="h-4 w-4 text-[#0078d4]" />
                             </div>
                             <span className="text-sm text-gray-900 dark:text-white">Maintenance</span>
                           </div>
-                          <span className="font-semibold text-orange-600">{property.maintenanceRequests}</span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/20 rounded-full p-1 mr-2">
-                              <DollarSign className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <span className="text-sm text-gray-900 dark:text-white">Revenue</span>
-                          </div>
-                          <span className="font-semibold text-blue-600">${property.revenue?.toLocaleString()}</span>
+                          <span className="font-semibold text-[#0078d4]">{property.maintenanceRequests}</span>
                         </div>
                       </div>
                     </div>
@@ -151,42 +139,51 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
               longitude={selectedProperty.coordinates.lng}
               onClose={() => setSelectedProperty(null)}
               closeButton={true}
-              className="custom-popup"
+              closeOnClick={false}
+              className="property-popup"
             >
-              <div className="p-4 bg-white dark:bg-[#252525] rounded-lg shadow-lg">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                  <Building2 className="h-5 w-5 mr-2 text-green-600 dark:text-green-400" />
-                  {selectedProperty.name}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 flex items-center">
-                  <MapPin className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                  {selectedProperty.address}
-                </p>
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded-lg">
-                    <div className="flex items-center mb-1">
-                      <Building2 className="h-4 w-4 mr-2 text-green-600 dark:text-green-400" />
-                      <span className="text-xs text-gray-600 dark:text-gray-400">Occupancy</span>
-                    </div>
-                    <p className="font-semibold text-green-600 text-lg">{selectedProperty.occupancyRate}%</p>
-                  </div>
-                  
-                  <div className="bg-orange-50 dark:bg-orange-900/20 p-2 rounded-lg">
-                    <div className="flex items-center mb-1">
-                      <Wrench className="h-4 w-4 mr-2 text-orange-600 dark:text-orange-400" />
-                      <span className="text-xs text-gray-600 dark:text-gray-400">Maintenance</span>
-                    </div>
-                    <p className="font-semibold text-orange-600 text-lg">{selectedProperty.maintenanceRequests}</p>
-                  </div>
+              <div className="bg-white dark:bg-[#1b1b1b] rounded-lg overflow-hidden w-72">
+                <div className="p-4 border-b border-gray-200 dark:border-[#3b3b3b]">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1 flex items-center">
+                    <Building2 className="h-5 w-5 mr-2 text-[#0078d4]" />
+                    {selectedProperty.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    {selectedProperty.address}
+                  </p>
                 </div>
                 
-                <div className="mt-3 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg">
-                  <div className="flex items-center mb-1">
-                    <DollarSign className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Monthly Revenue</span>
+                <div className="p-4 space-y-3">
+                  <div className="bg-[#0078d4]/5 dark:bg-[#0078d4]/10 p-3 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <Building2 className="h-4 w-4 mr-2 text-[#0078d4]" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Occupancy Rate</span>
+                      </div>
+                      <span className="text-lg font-semibold text-[#0078d4]">{selectedProperty.occupancyRate}%</span>
+                    </div>
                   </div>
-                  <p className="font-semibold text-blue-600 text-lg">${selectedProperty.revenue?.toLocaleString()}</p>
+
+                  <div className="bg-[#0078d4]/5 dark:bg-[#0078d4]/10 p-3 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <Wrench className="h-4 w-4 mr-2 text-[#0078d4]" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Maintenance Requests</span>
+                      </div>
+                      <span className="text-lg font-semibold text-[#0078d4]">{selectedProperty.maintenanceRequests}</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#0078d4]/5 dark:bg-[#0078d4]/10 p-3 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <DollarSign className="h-4 w-4 mr-2 text-[#0078d4]" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Monthly Revenue</span>
+                      </div>
+                      <span className="text-lg font-semibold text-[#0078d4]">${selectedProperty.revenue?.toLocaleString()}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Popup>
