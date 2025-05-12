@@ -40,4 +40,51 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
   return (
     <div className="h-[500px] w-full bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] overflow-hidden">
       <Map
-        mapboxAccessToken="pk.eyJ1IjoiZGVtby11c2VyIiwiYSI6ImNscnhkN2FjaTBhOXEya
+        mapboxAccessToken={import.meta.env.VITE_MAPBOX_ACCESS_TOKEN}
+        {...viewport}
+        onMove={evt => setViewport(evt.viewState)}
+        style={{ width: '100%', height: '100%' }}
+        mapStyle="mapbox://styles/mapbox/streets-v11"
+      >
+        {propertiesWithCoords.map((property) => (
+          <Marker
+            key={property.id}
+            latitude={property.coordinates?.lat || 0}
+            longitude={property.coordinates?.lng || 0}
+            onClick={e => {
+              e.originalEvent.stopPropagation();
+              setSelectedProperty(property);
+            }}
+          >
+            <Building2 className="text-blue-600 h-6 w-6 cursor-pointer" />
+          </Marker>
+        ))}
+
+        {selectedProperty && selectedProperty.coordinates && (
+          <Popup
+            latitude={selectedProperty.coordinates.lat}
+            longitude={selectedProperty.coordinates.lng}
+            onClose={() => setSelectedProperty(null)}
+            closeButton={true}
+            closeOnClick={false}
+            className="bg-white rounded-lg shadow-lg"
+          >
+            <div className="p-2">
+              <h3 className="font-semibold text-lg">{selectedProperty.name}</h3>
+              <p className="text-gray-600">{selectedProperty.address}</p>
+              {selectedProperty.occupancyRate && (
+                <p className="text-sm">Occupancy: {selectedProperty.occupancyRate}%</p>
+              )}
+              {selectedProperty.maintenanceRequests && (
+                <div className="flex items-center gap-1 text-sm text-orange-600">
+                  <Wrench className="h-4 w-4" />
+                  <span>{selectedProperty.maintenanceRequests} maintenance requests</span>
+                </div>
+              )}
+            </div>
+          </Popup>
+        )}
+      </Map>
+    </div>
+  );
+}
