@@ -29,9 +29,7 @@ class MaintenanceDiagnosisService {
       // Prepare conversation history for AI
       const conversationHistory = messages.map(msg => ({
         role: msg.role,
-        content: msg.attachments 
-          ? `${msg.content}\n[Attachments: ${msg.attachments.length} files]` 
-          : msg.content
+        content: msg.content
       }));
 
       // Get AI diagnosis
@@ -61,9 +59,7 @@ class MaintenanceDiagnosisService {
               Category: ${category || 'Not specified'}`
           },
           ...conversationHistory
-        ],
-        temperature: 0.7,
-        max_tokens: 500
+        ]
       });
 
       const response = completion.choices[0]?.message?.content || '';
