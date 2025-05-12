@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Menu, X, Home, Building2, Users, Wrench, FileText, CreditCard, DollarSign, Phone, LogOut } from 'lucide-react';
+import { Bell, Menu, X, Home, Building2, Users, Wrench, FileText, CreditCard, DollarSign, Phone, LogOut, Moon, Sun } from 'lucide-react';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,13 +20,27 @@ export default function Layout() {
   const { user, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
 
   useEffect(() => {
     if (!user) {
       navigate('/');
       return;
     }
-  }, [user, navigate]);
+
+    // Apply dark mode class
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [user, navigate, darkMode]);
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    localStorage.setItem('darkMode', newDarkMode.toString());
+  };
 
   if (!user) {
     return null;
@@ -59,10 +73,18 @@ export default function Layout() {
             </div>
 
             <div className="flex items-center space-x-4">
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-[#252525] rounded-full"
+                aria-label="Toggle dark mode"
+              >
+                {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+
               <button className="relative p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-[#252525] rounded-full">
                 <Bell className="h-6 w-6" />
                 {unreadMessages > 0 && (
-                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
+                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white dark:ring-[#1b1b1b]" />
                 )}
               </button>
             </div>
