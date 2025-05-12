@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, X } from 'lucide-react';
 import merchantService from '../services/merchantService';
 
 interface MerchantOnboardingProps {
   onComplete: () => void;
+  onClose?: () => void;
 }
 
-export default function MerchantOnboarding({ onComplete }: MerchantOnboardingProps) {
+export default function MerchantOnboarding({ onComplete, onClose }: MerchantOnboardingProps) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Business Name
               </label>
               <input
@@ -57,11 +58,11 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                 value={formData.businessName}
                 onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Email
               </label>
               <input
@@ -69,11 +70,11 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Phone
               </label>
               <input
@@ -81,7 +82,7 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
               />
             </div>
           </div>
@@ -91,7 +92,7 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Street Address
               </label>
               <input
@@ -102,12 +103,12 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                   address: { ...formData.address, line1: e.target.value }
                 })}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   City
                 </label>
                 <input
@@ -118,11 +119,11 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                     address: { ...formData.address, city: e.target.value }
                   })}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                  className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   State
                 </label>
                 <input
@@ -133,12 +134,12 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                     address: { ...formData.address, state: e.target.value }
                   })}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                  className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Postal Code
               </label>
               <input
@@ -149,7 +150,7 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                   address: { ...formData.address, postalCode: e.target.value }
                 })}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
               />
             </div>
           </div>
@@ -159,7 +160,7 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Bank Account Number
               </label>
               <input
@@ -170,11 +171,11 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                   bankAccount: { ...formData.bankAccount, accountNumber: e.target.value }
                 })}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Routing Number
               </label>
               <input
@@ -185,11 +186,11 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                   bankAccount: { ...formData.bankAccount, routingNumber: e.target.value }
                 })}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Account Type
               </label>
               <select
@@ -201,7 +202,7 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
                     accountType: e.target.value as 'checking' | 'savings'
                   }
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                className="w-full bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded p-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0078d4] focus:border-transparent"
               >
                 <option value="checking">Checking</option>
                 <option value="savings">Savings</option>
@@ -216,8 +217,18 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Set Up Merchant Account</h2>
+    <div className="bg-white dark:bg-[#252525] p-6 rounded-lg max-w-md w-full">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Set Up Merchant Account</h2>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
+      </div>
 
       {error && (
         <div className="mb-4 rounded-md bg-red-50 dark:bg-red-900/20 p-4">
@@ -231,21 +242,30 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
       )}
 
       <div className="mb-8">
-        <div className="flex justify-between items-center">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                s === step
-                  ? 'bg-blue-600 text-white'
-                  : s < step
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
-              }`}
-            >
-              {s}
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                <div className="w-full border-t border-gray-200 dark:border-[#3b3b3b]"></div>
+              </div>
+              <div className="relative flex justify-between">
+                {[1, 2, 3].map((s) => (
+                  <div
+                    key={s}
+                    className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${
+                      s === step
+                        ? 'bg-[#0078d4] text-white'
+                        : s < step
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-200 dark:bg-[#3b3b3b] text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    {s}
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -257,7 +277,7 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
             <button
               type="button"
               onClick={() => setStep(step - 1)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-[#1b1b1b] border border-gray-300 dark:border-[#3b3b3b] rounded hover:bg-gray-50 dark:hover:bg-[#292929] transition-colors"
             >
               Back
             </button>
@@ -266,7 +286,9 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
             <button
               type="button"
               onClick={() => setStep(step + 1)}
-              className="ml-auto px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              className={`px-4 py-2 text-sm font-medium text-white bg-[#0078d4] hover:bg-[#106ebe] rounded transition-colors ${
+                step > 1 ? 'ml-auto' : ''
+              }`}
             >
               Next
             </button>
@@ -274,10 +296,10 @@ export default function MerchantOnboarding({ onComplete }: MerchantOnboardingPro
             <button
               type="submit"
               disabled={loading}
-              className={`ml-auto px-4 py-2 text-sm font-medium text-white rounded-md ${
+              className={`ml-auto px-4 py-2 text-sm font-medium text-white rounded transition-colors ${
                 loading
-                  ? 'bg-blue-400 dark:bg-blue-500 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
+                  ? 'bg-[#0078d4]/50 cursor-not-allowed'
+                  : 'bg-[#0078d4] hover:bg-[#106ebe]'
               }`}
             >
               {loading ? 'Setting up...' : 'Complete Setup'}
