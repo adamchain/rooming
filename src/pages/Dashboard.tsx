@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MessageThread from '../components/MessageThread';
+import PropertyMap from '../components/PropertyMap';
 import { Building2, DollarSign, Wrench, FileText } from 'lucide-react';
 import { formatCurrency } from '../utils/formatters';
 import { useAuth } from '../context/AuthContext';
@@ -25,7 +26,30 @@ export default function Dashboard() {
       pendingMaintenance: 3,
       occupancyRate: 92,
       documentsToReview: 2
-    }
+    },
+    properties: [
+      {
+        id: '1',
+        name: 'Sunset Apartments',
+        address: '123 Main Street, San Francisco, CA',
+        occupancyRate: 92,
+        maintenanceRequests: 2
+      },
+      {
+        id: '2',
+        name: 'Ocean View Condos',
+        address: '456 Beach Road, San Francisco, CA',
+        occupancyRate: 88,
+        maintenanceRequests: 1
+      },
+      {
+        id: '3',
+        name: 'Mountain Lodge',
+        address: '789 Pine Street, San Francisco, CA',
+        occupancyRate: 95,
+        maintenanceRequests: 0
+      }
+    ]
   });
 
   if (!user?.id) {
@@ -90,6 +114,12 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Property Map */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Property Overview</h2>
+        <PropertyMap properties={data.properties} />
       </div>
 
       {/* Messages Section */}

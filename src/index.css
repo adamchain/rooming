@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.mapboxgl-popup-content {
+  @apply bg-white dark:bg-[#252525] border border-gray-200 dark:border-[#3b3b3b] shadow-lg rounded-lg !important;
+}
+
+.mapboxgl-popup-close-button {
+  @apply text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 !important;
+}
+
+.mapboxgl-popup-tip {
+  @apply border-t-white dark:border-t-[#252525] !important;
+}
