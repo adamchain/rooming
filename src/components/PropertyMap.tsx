@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Map, { Marker, Popup } from 'react-map-gl';
-import { Building2, Wrench, MapPin } from 'lucide-react';
+import { Building2, Wrench, MapPin, DollarSign } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface Property {
