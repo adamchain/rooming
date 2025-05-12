@@ -40,7 +40,7 @@ export default function PropertyMap({ properties }: PropertyMapProps) {
   return (
     <div className="h-[500px] w-full bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] overflow-hidden">
       <Map
-        mapboxAccessToken="pk.eyJ1IjoiZGVtby11c2VyIiwiYSI6ImNscnhkN2FjaTBhOXEya291M3Y4cDA4NmJ4c2wifQ.4mUIqO9w_cuQtYVtDLyPew"
+        mapboxAccessToken={import.meta.env.VITE_MAPBOX_ACCESS_TOKEN}
         {...viewport}
         onMove={evt => setViewport(evt.viewState)}
         mapStyle="mapbox://styles/mapbox/streets-v11"
