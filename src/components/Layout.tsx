@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Menu, X, Home, Building2, Users, Wrench, FileText, CreditCard, DollarSign, Phone, LogOut } from 'lucide-react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const navigationItems = [
@@ -87,9 +87,10 @@ export default function Layout() {
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                 <nav className="mt-5 px-2 space-y-1">
                   {navigationItems.map((item) => (
-                    <a
+                    <Link
                       key={item.id}
-                      href={item.path}
+                      to={item.path}
+                      onClick={() => setSidebarOpen(false)}
                       className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
                         location.pathname === item.path
                           ? 'bg-gray-100 dark:bg-[#252525] text-[#0078d4]'
@@ -98,7 +99,7 @@ export default function Layout() {
                     >
                       <item.icon className="mr-4 h-6 w-6" />
                       {item.label}
-                    </a>
+                    </Link>
                   ))}
                 </nav>
               </div>
@@ -122,9 +123,9 @@ export default function Layout() {
               <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                 <nav className="mt-5 flex-1 px-2 space-y-1">
                   {navigationItems.map((item) => (
-                    <a
+                    <Link
                       key={item.id}
-                      href={item.path}
+                      to={item.path}
                       className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                         location.pathname === item.path
                           ? 'bg-gray-100 dark:bg-[#252525] text-[#0078d4]'
@@ -133,7 +134,7 @@ export default function Layout() {
                     >
                       <item.icon className="mr-3 h-5 w-5" />
                       {item.label}
-                    </a>
+                    </Link>
                   ))}
                 </nav>
               </div>
