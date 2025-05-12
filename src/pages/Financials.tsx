@@ -104,7 +104,7 @@ export default function Financials() {
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'rent'
                 ? 'bg-[#0078d4] text-white'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                : 'bg-white dark:bg-[#1b1b1b] text-[#0078d4] border border-[#0078d4] hover:bg-[#0078d4] hover:text-white'
             }`}
           >
             Rent
@@ -126,7 +126,7 @@ export default function Financials() {
       {activeTab === 'overview' && (
         <>
           {!connected ? (
-            <div className="max-w-lg mx-auto mt-10 bg-white dark:bg-[#252525] p-8 rounded border border-gray-200 dark:border-[#3b3b3b] transition-colors duration-200">
+            <div className="max-w-lg mx-auto mt-10 bg-white dark:bg-[#252525] p-8 rounded-lg shadow">
               <div className="text-center">
                 <DollarSign className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
                 <h2 className="mt-2 text-lg font-medium text-gray-900 dark:text-white">
