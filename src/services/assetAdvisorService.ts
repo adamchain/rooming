@@ -31,7 +31,7 @@ class AssetAdvisorService {
           current_value,
           monthly_rent,
           expenses,
-          mortgage:property_mortgages(
+          property_mortgages!property_id(
             balance,
             rate,
             term,
@@ -40,7 +40,16 @@ class AssetAdvisorService {
         `);
 
       if (error) throw error;
-      return properties || [];
+
+      // Transform the response to match the PropertyValue interface
+      return (properties || []).map(property => ({
+        id: property.id,
+        purchasePrice: property.purchase_price,
+        currentValue: property.current_value,
+        monthlyRent: property.monthly_rent,
+        expenses: property.expenses,
+        mortgage: property.property_mortgages?.[0] || null
+      }));
     } catch (error) {
       console.error('Error fetching property values:', error);
       throw new Error('Failed to fetch property values');
