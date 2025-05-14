@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, DollarSign, PieChart, AlertCircle, Building2 } from 'lucide-react';
 import assetAdvisorService from '../services/assetAdvisorService';
 import { formatCurrency } from '../utils/formatters';
+import AssetPortfolioChart from './AssetPortfolioChart';
+import ProjectionChart from './ProjectionChart';
 
 interface AssetAdvisorProps {
   currentAge?: number;
@@ -32,6 +34,29 @@ export default function AssetAdvisor({ currentAge = 35 }: AssetAdvisorProps) {
       setLoading(false);
     }
   };
+
+  const projectionData = useMemo(() => {
+    if (!properties.length) return [];
+
+    const years = retirementGoal.targetAge - currentAge;
+    const appreciationRates = {
+      conservative: 0.03,
+      moderate: 0.05,
+      aggressive: 0.07
+    };
+    const rate = appreciationRates[retirementGoal.riskTolerance];
+
+    return Array.from({ length: years + 1 }, (_, i) => {
+      const date = new Date();
+      date.setFullYear(date.getFullYear() + i);
+
+      const value = properties.reduce((total, property) => {
+        return total + assetAdvisorService.projectFutureValue(property, i, rate);
+      }, 0);
+
+      return { date, value };
+    });
+  }, [properties, retirementGoal, currentAge]);
 
   if (loading) {
     return (
@@ -123,6 +148,35 @@ export default function AssetAdvisor({ currentAge = 35 }: AssetAdvisorProps) {
                 {properties.length > 0 ? '85%' : 'N/A'}
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Portfolio Distribution */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Portfolio Distribution
+          </h2>
+          <div className="h-64">
+            <AssetPortfolioChart
+              width={400}
+              height={250}
+              properties={properties}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Value Projection
+          </h2>
+          <div className="h-64">
+            <ProjectionChart
+              width={400}
+              height={250}
+              data={projectionData}
+            />
           </div>
         </div>
       </div>
