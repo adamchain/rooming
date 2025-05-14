@@ -12,6 +12,7 @@ import Financials from './pages/Financials';
 import Contacts from './pages/Contacts';
 import Landing from './pages/Landing';
 import TenantDashboard from './pages/TenantDashboard';
+import AssetManager from './pages/AssetManager';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="payments" element={<Payments />} />
             <Route path="financials" element={<Financials />} />
             <Route path="contacts" element={<Contacts />} />
+            <Route path="assets" element={<AssetManager />} />
             <Route path="settings" element={<div>Settings Page</div>} />
           </Route>
         </Routes>
