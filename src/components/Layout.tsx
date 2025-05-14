@@ -1,3 +1,5 @@
+import React from 'react';
+import { Outlet, NavLink } from 'react-router-dom';
 import { Home, Building2, Users, Wrench, FileText, CreditCard, DollarSign, Phone, TrendingUp } from 'lucide-react';
 
 const navigationItems = [
@@ -12,4 +14,42 @@ const navigationItems = [
   { id: 'assets', icon: TrendingUp, label: 'Assets', path: '/dashboard/assets' }
 ];
 
-export default navigationItems;
+export const Layout = () => {
+  return (
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <nav className="w-64 bg-white shadow-lg">
+        <div className="p-4">
+          <h1 className="text-2xl font-bold text-gray-800">Property Manager</h1>
+        </div>
+        <ul className="space-y-2 p-4">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.id}>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-blue-500 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`
+                  }
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </NavLink>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto p-8">
+        <Outlet />
+      </main>
+    </div>
+  );
+};
