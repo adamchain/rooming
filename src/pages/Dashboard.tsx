@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MessageThread from '../components/MessageThread';
 import PropertyMap from '../components/PropertyMap';
+import AssetAdvisor from '../components/AssetAdvisor';
 import { Building2, DollarSign, Wrench, FileText } from 'lucide-react';
 import { formatCurrency } from '../utils/formatters';
 import { useAuth } from '../context/AuthContext';
@@ -114,6 +115,12 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Asset Advisor */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Asset Advisor</h2>
+        <AssetAdvisor currentAge={35} />
       </div>
 
       {/* Property Map */}
