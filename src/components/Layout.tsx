@@ -1,4 +1,5 @@
-{/* Previous Layout.tsx content with added Assets navigation item */}
+import { Home, Building2, Users, Wrench, FileText, CreditCard, DollarSign, Phone, TrendingUp } from 'lucide-react';
+
 const navigationItems = [
   { id: 'dashboard', icon: Home, label: 'Dashboard', path: '/dashboard' },
   { id: 'properties', icon: Building2, label: 'Properties', path: '/dashboard/properties' },
@@ -11,4 +12,4 @@ const navigationItems = [
   { id: 'assets', icon: TrendingUp, label: 'Assets', path: '/dashboard/assets' }
 ];
 
-export default navigationItems
+export default navigationItems;
