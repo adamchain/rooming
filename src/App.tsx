@@ -55,10 +55,9 @@ function App() {
       const realmId = localStorage.getItem('quickbooks_realm_id');
       console.log("Using realmId:", realmId);
 
-      // Add realmId as query parameter if available
       const url = realmId
-        ? `https://rooming-qb.netlify.app/api/quickbooks/financial-data?realmId=${realmId}`
-        : 'https://rooming-qb.netlify.app/api/quickbooks/financial-data';
+        ? `https://quickbooks-server-production.up.railway.app/api/quickbooks/financial-data?realmId=${realmId}`
+        : 'https://quickbooks-server-production.up.railway.app/api/quickbooks/financial-data';
 
       console.log("Fetching financial data from:", url);
 
@@ -129,7 +128,9 @@ function App() {
 
   const handleQuickBooksLogin = () => {
     // Direct to the backend auth endpoint
-    window.location.href = 'https://rooming-qb.netlify.app/api/quickbooks/auth';
+    //window.location.href = 'https://rooming-qb.netlify.app/api/quickbooks/auth';
+    window.location.href = 'https://quickbooks-server-production.up.railway.app/api/quickbooks/auth';
+
   };
 
   // Define StatCard as a React component using any for the icon type

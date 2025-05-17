@@ -44,7 +44,9 @@ const Callback: React.FC = () => {
                 setStatus('Exchanging authorization code for token...');
 
                 // Updated to use your local server API endpoint
-                const response = await fetch('https://rooming-qb.netlify.app/api/quickbooks/callback', {
+                //const response = await fetch('https://rooming-qb.netlify.app/api/quickbooks/callback', {
+                const response = await fetch('https://quickbooks-server-production.up.railway.app/api/quickbooks/callback', {
+
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
