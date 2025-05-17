@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors({
     // Add your production domain once deployed
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://rooming-qb.netlify.app'],
+    origin: ['http://localhost:5173', 'https://rooming-qb.netlify.app', 'https://rooming-qb.netlify.app', 'https://rooming-qb.netlify.app'],
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
