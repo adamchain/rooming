@@ -287,7 +287,7 @@ function App() {
   // Routes structure
   return (
     <Routes>
-      <Route path="/callback" element={<Callback />} />
+      <Route path="/callbacks" element={<Callback />} />
       <Route path="/" element={isAuthenticated ? <Dashboard /> : <LoginPage />} />
     </Routes>
   );
