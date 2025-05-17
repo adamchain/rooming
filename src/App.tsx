@@ -3,7 +3,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Calculator, DollarSign, PieChart, Users, Search, Bell, Plus, ChartBar } from 'lucide-react';
+import { Calculator, DollarSign, PieChart, Users, ChartBar } from 'lucide-react';
 import Callback from './Callback'; // Import the separate Callback component
 
 interface FinancialData {
