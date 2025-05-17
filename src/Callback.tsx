@@ -45,7 +45,7 @@ const Callback: React.FC = () => {
                 setStatus('Exchanging authorization code for token...');
 
                 // Call your backend to exchange the code for a token
-                const response = await fetch('http://localhost:3000/api/quickbooks/callback', {
+                const response = await fetch('https://rooming-qb.netlify.app/callbacks', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
