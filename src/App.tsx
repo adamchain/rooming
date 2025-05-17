@@ -2,7 +2,7 @@
 // src/App.tsx
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Calculator, DollarSign, PieChart, Users, Search, Bell, Plus, Home, Calendar, ShoppingCart } from 'lucide-react';
 import Callback from './Callback'; // Import the separate Callback component
@@ -26,7 +26,7 @@ function App() {
   const [financialData, setFinancialData] = useState<FinancialData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError,] = useState<string | null>(null);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
