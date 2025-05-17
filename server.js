@@ -12,12 +12,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 config();
+console.log("Checking environment variables:");
+console.log("QUICKBOOKS_CLIENT_ID:", process.env.QUICKBOOKS_CLIENT_ID ? "✓ Set" : "✗ Not set");
+console.log("QUICKBOOKS_CLIENT_SECRET:", process.env.QUICKBOOKS_CLIENT_SECRET ? "✓ Set" : "✗ Not set");
+console.log("QUICKBOOKS_REDIRECT_URI:", process.env.QUICKBOOKS_REDIRECT_URI);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'], // Add any other origins you need
+    // Add your production domain once deployed
+    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://rooming-qb.netlify.app'],
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
@@ -32,18 +37,28 @@ app.options('/api/quickbooks/callback', (req, res) => {
     res.status(200).end();
 });
 
-// QuickBooks OAuth configuration
+//qb Oauth
 const oauthClient = new OAuthClient({
-    clientId: process.env.VITE_QUICKBOOKS_CLIENT_ID,
-    clientSecret: process.env.VITE_QUICKBOOKS_CLIENT_SECRET,
+    clientId: process.env.QUICKBOOKS_CLIENT_ID,
+    clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET,
     environment: 'sandbox', // Using sandbox as specified in your env file
-    redirectUri: process.env.VITE_QUICKBOOKS_REDIRECT_URI || 'http://localhost:5173/callback',
+    redirectUri: process.env.QUICKBOOKS_REDIRECT_URI,
+    logging: true // Enable logging for troubleshooting
 });
+console.log("OAuth Client Configuration:");
+console.log("Client ID:", process.env.QUICKBOOKS_CLIENT_ID ? `${process.env.QUICKBOOKS_CLIENT_ID.substring(0, 5)}...` : 'not set');
+console.log("Redirect URI:", process.env.QUICKBOOKS_REDIRECT_URI);
+console.log("Environment:", 'sandbox');
+console.log("Realm ID:", process.env.QUICKBOOKS_REALM_ID);
 
 // Routes
 app.get('/api/quickbooks/auth', (req, res) => {
     try {
+        // Log the redirect URI for debugging
         console.log("Generating auth URL with redirect URI:", oauthClient.redirectUri);
+
+        // Ensure oauthClient is using the correct redirect URI
+        oauthClient.redirectUri = process.env.QUICKBOOKS_REDIRECT_URI;
 
         // Generate authorization URL
         const authUri = oauthClient.authorizeUri({
@@ -60,7 +75,6 @@ app.get('/api/quickbooks/auth', (req, res) => {
         res.status(500).json({ error: 'Failed to initiate OAuth flow', details: error.message });
     }
 });
-
 app.post('/api/quickbooks/callback', async (req, res) => {
     console.log("Received callback request with body:", req.body);
     const { code, realmId } = req.body;
@@ -73,26 +87,63 @@ app.post('/api/quickbooks/callback', async (req, res) => {
     try {
         console.log("Exchanging auth code for tokens with code:", code);
 
-        // Token exchange code...
+        // Create request parameters
+        const params = new URLSearchParams();
+        params.append('grant_type', 'authorization_code');
+        params.append('code', code);
+        params.append('redirect_uri', oauthClient.redirectUri);
 
-        // Add debugging for CORS issues
-        console.log("Sending response headers:", res.getHeaders());
+        console.log("Token request params:", params.toString());
 
+        // Make direct request to QuickBooks token endpoint
+        const response = await axios.post(
+            'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
+            params.toString(), // Important: Convert params to string
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + Buffer.from(
+                        `${oauthClient.clientId}:${oauthClient.clientSecret}`
+                    ).toString('base64')
+                }
+            }
+        );
+
+        const tokens = response.data;
+
+        console.log("Token exchange successful!");
+        console.log("Access token received (truncated):",
+            tokens.access_token ? `${tokens.access_token.substring(0, 10)}...` : 'undefined');
+
+        // Return successful response to client
         return res.json({
             access_token: tokens.access_token,
             refresh_token: tokens.refresh_token,
-            expires_in: tokens.expires_in
+            expires_in: tokens.expires_in,
+            realmId: realmId
         });
     } catch (error) {
-        console.error('Error exchanging auth code:', error);
-        if (error.response && error.response.data) {
-            console.error('Error response data:', error.response.data);
+        console.error('Error exchanging auth code:', error.message);
+
+        // Extract and log useful error information
+        let errorInfo = {
+            message: error.message
+        };
+
+        if (error.response) {
+            console.error('Response status:', error.response.status);
+            console.error('Response data:', error.response.data);
+            errorInfo.status = error.response.status;
+            errorInfo.data = error.response.data;
         }
-        res.status(500).json({ error: 'Failed to exchange auth code', details: error.message });
+
+        res.status(500).json({
+            error: 'Failed to exchange auth code',
+            details: error.message,
+            info: errorInfo
+        });
     }
 });
-
-// Updated financial data endpoint with better error handling
 app.get('/api/quickbooks/financial-data', async (req, res) => {
     try {
         // Extract token from authorization header
@@ -104,7 +155,7 @@ app.get('/api/quickbooks/financial-data', async (req, res) => {
         const token = authHeader.split(' ')[1];
 
         // Get the realmId from query params, local storage, or env variable
-        const realmId = req.query.realmId || process.env.VITE_QUICKBOOKS_REALM_ID;
+        const realmId = req.query.realmId || process.env.QUICKBOOKS_REALM_ID;
 
         if (!realmId) {
             return res.status(400).json({ error: 'No company ID (realmId) provided' });
@@ -236,13 +287,9 @@ app.get('/api/quickbooks/financial-data', async (req, res) => {
         });
     }
 });
-
-// Serve static files in production
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('dist'));
 }
-
-// Catch-all route
 app.get('/', (req, res) => {
     if (process.env.NODE_ENV === 'production') {
         res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
@@ -250,10 +297,9 @@ app.get('/', (req, res) => {
         res.send('QuickBooks API Server - Go to /api/quickbooks/auth to start the OAuth flow');
     }
 });
-
-// Start server
+//start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Using QuickBooks Redirect URI: ${oauthClient.redirectUri}`);
-    console.log(`Using QuickBooks Realm ID: ${process.env.VITE_QUICKBOOKS_REALM_ID}`);
+    console.log(`Using QuickBooks Realm ID: ${process.env.QUICKBOOKS_REALM_ID}`);
 });

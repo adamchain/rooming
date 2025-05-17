@@ -1,4 +1,3 @@
-// src/Callback.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { unregisterAllServiceWorkers, clearSiteData } from './utils/serviceWorkerUtils';
@@ -44,13 +43,15 @@ const Callback: React.FC = () => {
 
                 setStatus('Exchanging authorization code for token...');
 
-                // Call your backend to exchange the code for a token
-                const response = await fetch('https://rooming-qb.netlify.app/callbacks', {
+                // Updated to use your local server API endpoint
+                const response = await fetch('http://localhost:3000/api/quickbooks/callback', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ code, realmId }),
+                    // Important for CORS with credentials
+                    credentials: 'include'
                 });
 
                 if (!response.ok) {

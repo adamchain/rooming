@@ -204,7 +204,7 @@ function App() {
       {/* Sidebar */}
       <div className="w-24 bg-white shadow-sm flex flex-col items-center pt-5">
         <div className="mb-8 px-2">
-          <h1 className="text-teal-600 text-3xl font-bold">Synq</h1>
+          <h1 className="text-teal-600 text-3xl font-bold">QB API</h1>
         </div>
         <SidebarLink icon={Home} label="Home" active />
         <SidebarLink icon={Calendar} label="Revenue" />
