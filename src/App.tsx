@@ -1,7 +1,11 @@
+
+// src/App.tsx
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Calculator, DollarSign, PieChart, Users, Search, Bell, Plus, ChevronDown, Home, Calendar, ShoppingCart, BarChart2, Users as UsersIcon, Settings } from 'lucide-react';
+import { Calculator, DollarSign, PieChart, Users, Search, Bell, Plus, Home, Calendar, ShoppingCart } from 'lucide-react';
+import Callback from './Callback'; // Import the separate Callback component
 
 interface FinancialData {
   date: string;
@@ -16,48 +20,18 @@ interface StatCardProps {
   value: string;
 }
 
+// Main App Component
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [financialData, setFinancialData] = useState<FinancialData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError,] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    // Handle OAuth callback
-    if (window.location.pathname === '/callback') {
-      // Clear any previous errors
-      setError(null);
-
-      console.log("On callback page, URL params:", window.location.search);
-      const urlParams = new URLSearchParams(window.location.search);
-
-      // Check for error params
-      const errorParam = urlParams.get('error');
-      const errorDescription = urlParams.get('error_description');
-
-      if (errorParam) {
-        console.error("OAuth Error:", errorParam, errorDescription);
-        setError(`QuickBooks authentication error: ${errorDescription || errorParam}`);
-        return;
-      }
-
-      const code = urlParams.get('code');
-      const realmId = urlParams.get('realmId');
-
-      console.log("Code received:", code ? "Yes" : "No");
-      console.log("RealmId received:", realmId);
-
-      if (code) {
-        // Store realmId in localStorage if available
-        if (realmId) {
-          localStorage.setItem('quickbooks_realm_id', realmId);
-        }
-
-        handleAuthCode(code);
-      } else {
-        setError("No authorization code received from QuickBooks");
-      }
-    } else {
+    // Only handle token check on the main page, not on callback
+    if (location.pathname !== '/callback') {
       // Check if we have a valid token
       const token = localStorage.getItem('quickbooks_token');
       if (token) {
@@ -65,68 +39,9 @@ function App() {
         fetchFinancialData();
       }
     }
-  }, []);
+  }, [location.pathname]);
 
-  const handleAuthCode = async (code: string) => {
-    try {
-      setIsLoading(true);
-      console.log("Exchanging auth code for token");
-
-      // Don't use OPTIONS preflight check anymore, just do a direct POST
-      const response = await fetch('http://localhost:3000/api/quickbooks/callback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code,
-          realmId: localStorage.getItem('quickbooks_realm_id')
-        }),
-      });
-
-      console.log("Response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        setError(`Failed to exchange auth code: ${response.status} ${errorText}`);
-        setIsLoading(false);
-        return;
-      }
-
-      const data = await response.json();
-      console.log("Token received:", data.access_token ? "Yes" : "No");
-
-      if (!data.access_token) {
-        setError("No access token received from the server");
-        setIsLoading(false);
-        return;
-      }
-
-      localStorage.setItem('quickbooks_token', data.access_token);
-
-      // Also store refresh token if available
-      if (data.refresh_token) {
-        localStorage.setItem('quickbooks_refresh_token', data.refresh_token);
-      }
-
-      setIsAuthenticated(true);
-      setIsLoading(false);
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Error exchanging auth code:', error);
-      setError(`Failed to connect to QuickBooks: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      setIsLoading(false);
-    }
-  };
-  // Add this function to your App component
-  const handleLogout = () => {
-    localStorage.removeItem('quickbooks_token');
-    localStorage.removeItem('quickbooks_refresh_token');
-    localStorage.removeItem('quickbooks_realm_id');
-    setIsAuthenticated(false);
-  };
-
+  // Keep your existing function for fetching financial data
   const fetchFinancialData = async () => {
     try {
       setIsLoading(true);
@@ -207,6 +122,13 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('quickbooks_token');
+    localStorage.removeItem('quickbooks_refresh_token');
+    localStorage.removeItem('quickbooks_realm_id');
+    setIsAuthenticated(false);
+  };
+
   const handleQuickBooksLogin = () => {
     // Direct to the backend auth endpoint
     window.location.href = 'http://localhost:3000/api/quickbooks/auth';
@@ -253,32 +175,31 @@ function App() {
     </div>
   );
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-md w-full">
-          <DollarSign className="w-16 h-16 text-teal-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold mb-4">QuickBooks Integration</h1>
-          <p className="text-gray-600 mb-6">Connect your QuickBooks account to view your financial dashboard</p>
+  // Login page component
+  const LoginPage = () => (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-md w-full">
+        <DollarSign className="w-16 h-16 text-teal-600 mx-auto mb-4" />
+        <h1 className="text-2xl font-bold mb-4">QuickBooks Integration</h1>
+        <p className="text-gray-600 mb-6">Connect your QuickBooks account to view your financial dashboard</p>
 
-          {error && <ErrorDisplay message={error} />}
-          {isLoading && <LoadingDisplay />}
+        {error && <ErrorDisplay message={error} />}
+        {isLoading && <LoadingDisplay />}
 
-          {!isLoading && (
-            <button
-              onClick={handleQuickBooksLogin}
-              className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition-colors"
-            >
-              Connect QuickBooks
-            </button>
-          )}
-        </div>
+        {!isLoading && (
+          <button
+            onClick={handleQuickBooksLogin}
+            className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            Connect QuickBooks
+          </button>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 
-  // WHSKR-style dashboard layout
-  return (
+  // Dashboard component 
+  const Dashboard = () => (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
       <div className="w-24 bg-white shadow-sm flex flex-col items-center pt-5">
@@ -329,8 +250,6 @@ function App() {
             </button>
           </div>
 
-
-
           {/* Financial Summary */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard
@@ -374,6 +293,14 @@ function App() {
         </main>
       </div>
     </div>
+  );
+
+  // Routes structure
+  return (
+    <Routes>
+      <Route path="/callback" element={<Callback />} />
+      <Route path="/" element={isAuthenticated ? <Dashboard /> : <LoginPage />} />
+    </Routes>
   );
 }
 

@@ -1,13 +1,14 @@
 // src/Callback.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { unregisterAllServiceWorkers, clearSiteData } from './utils/serviceWorkerUtils'
+import { unregisterAllServiceWorkers, clearSiteData } from './utils/serviceWorkerUtils';
 
 const Callback: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [status, setStatus] = useState('Processing');
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // Unregister service workers to prevent interference
@@ -16,6 +17,7 @@ const Callback: React.FC = () => {
 
         const processCallback = async () => {
             try {
+                console.log("Callback component mounted, URL:", location.search);
                 // Parse URL parameters
                 const searchParams = new URLSearchParams(location.search);
                 const code = searchParams.get('code');
@@ -25,15 +27,17 @@ const Callback: React.FC = () => {
                 if (errorParam) {
                     const errorDesc = searchParams.get('error_description') || 'Unknown error';
                     setError(`Authentication error: ${errorDesc}`);
+                    setIsLoading(false);
                     return;
                 }
 
                 if (!code) {
                     setError('No authorization code received');
+                    setIsLoading(false);
                     return;
                 }
 
-                // Store realmId in localStorage
+                // Store realmId in localStorage if available
                 if (realmId) {
                     localStorage.setItem('quickbooks_realm_id', realmId);
                 }
@@ -68,26 +72,42 @@ const Callback: React.FC = () => {
                 }
 
                 setStatus('Connected successfully!');
+                setIsLoading(false);
 
                 // Redirect to home page after a short delay
                 setTimeout(() => {
                     navigate('/');
-                }, 1000);
+                }, 1500);
             } catch (err) {
                 console.error('Callback processing error:', err);
                 setError(err instanceof Error ? err.message : 'Unknown error occurred');
+                setIsLoading(false);
             }
         };
 
         processCallback();
     }, [location, navigate]);
 
+    // Error display component
+    const ErrorDisplay: React.FC<{ message: string }> = ({ message }) => (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p>{message}</p>
+        </div>
+    );
+
+    // Loading display component
+    const LoadingDisplay: React.FC = () => (
+        <div className="flex justify-center items-center h-20">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600"></div>
+        </div>
+    );
+
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center">
             <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-md w-full">
                 {!error ? (
                     <>
-                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600 mx-auto mb-4"></div>
+                        {isLoading && <LoadingDisplay />}
                         <h1 className="text-xl font-bold mb-2">QuickBooks Authentication</h1>
                         <p className="text-gray-600">{status}</p>
                     </>
@@ -95,10 +115,10 @@ const Callback: React.FC = () => {
                     <>
                         <div className="text-red-500 text-5xl mb-4">⚠️</div>
                         <h1 className="text-xl font-bold mb-2">Connection Error</h1>
-                        <p className="text-red-600 mb-4">{error}</p>
+                        <ErrorDisplay message={error} />
                         <button
                             onClick={() => navigate('/')}
-                            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
+                            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 mt-4"
                         >
                             Return to Dashboard
                         </button>
