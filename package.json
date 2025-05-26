@@ -19,7 +19,9 @@
     "assert": "^2.1.0",
     "buffer": "^6.0.3",
     "d3-array": "^3.2.4",
+    "d3-sankey": "^0.12.3",
     "date-fns": "^3.3.1",
+    "intuit-oauth": "^4.0.0",
     "lucide-react": "^0.323.0",
     "mapbox-gl": "^3.1.2",
     "nanoid": "^5.0.6",
@@ -35,6 +37,7 @@
   },
   "devDependencies": {
     "@types/d3-array": "^3.2.1",
+    "@types/d3-sankey": "^0.12.3",
     "@types/mapbox-gl": "^2.7.21",
     "@types/node": "^20.11.17",
     "@types/react": "^18.2.55",

@@ -1,152 +1,169 @@
-import React, { useState, useEffect } from 'react';
-import MessageThread from '../components/MessageThread';
-import PropertyMap from '../components/PropertyMap';
-import AssetAdvisor from '../components/AssetAdvisor';
-import { Building2, DollarSign, Wrench, FileText } from 'lucide-react';
-import { formatCurrency } from '../utils/formatters';
-import { useAuth } from '../context/AuthContext';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Building2, Calculator, CreditCard, TrendingUp } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user } = useAuth();
-  
-  // Demo data for initial render
-  const [data, setData] = useState({
-    tenants: [
-      {
-        id: '22222222-2222-2222-2222-222222222222',
-        name: 'John Smith',
-        email: 'tenant@test.com',
-        property: {
-          name: 'Sunset Apartments',
-          address: '123 Main Street, Apt 4B'
-        }
-      }
-    ],
-    stats: {
-      totalRent: 15000,
-      pendingMaintenance: 3,
-      occupancyRate: 92,
-      documentsToReview: 2
-    },
-    properties: [
-      {
-        id: '1',
-        name: 'Sunset Apartments',
-        address: '123 Main Street, San Francisco, CA',
-        occupancyRate: 92,
-        maintenanceRequests: 2
-      },
-      {
-        id: '2',
-        name: 'Ocean View Condos',
-        address: '456 Beach Road, San Francisco, CA',
-        occupancyRate: 88,
-        maintenanceRequests: 1
-      },
-      {
-        id: '3',
-        name: 'Mountain Lodge',
-        address: '789 Pine Street, San Francisco, CA',
-        occupancyRate: 95,
-        maintenanceRequests: 0
-      }
-    ]
-  });
-
-  if (!user?.id) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-[#202020]">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Please sign in</h2>
-          <p className="text-gray-600 dark:text-gray-400">You need to be signed in to view the dashboard</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-8">
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white dark:bg-[#252525] overflow-hidden rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 bg-[#0078d4]/10 rounded-full p-3">
-              <DollarSign className="h-6 w-6 text-[#0078d4]" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Monthly Rent</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">{formatCurrency(data.stats.totalRent)}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-[#252525] overflow-hidden rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 bg-orange-100 dark:bg-orange-900/20 rounded-full p-3">
-              <Wrench className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Maintenance</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">{data.stats.pendingMaintenance}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-[#252525] overflow-hidden rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 bg-green-100 dark:bg-green-900/20 rounded-full p-3">
-              <Building2 className="h-6 w-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Occupancy Rate</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">{data.stats.occupancyRate}%</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-[#252525] overflow-hidden rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 bg-purple-100 dark:bg-purple-900/20 rounded-full p-3">
-              <FileText className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Documents to Review</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">{data.stats.documentsToReview}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Asset Advisor */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Asset Advisor</h2>
-        <AssetAdvisor currentAge={35} />
-      </div>
-
-      {/* Property Map */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Property Overview</h2>
-        <PropertyMap properties={data.properties} />
-      </div>
-
-      {/* Messages Section */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Messages</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data.tenants.map((tenant) => (
-            <div key={tenant.id} className="bg-white dark:bg-[#252525] rounded-lg border border-gray-200 dark:border-[#3b3b3b] p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">{tenant.name}</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{tenant.property?.name || tenant.property?.address}</p>
+      <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Dashboard</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Asset Manager Card */}
+        <div className="bg-white dark:bg-[#252525] rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-[#3b3b3b]">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-full">
+                  <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
+                <h2 className="ml-3 text-lg font-medium text-gray-900 dark:text-white">Asset Manager</h2>
               </div>
-              <MessageThread 
-                receiverId={tenant.id} 
-                receiverEmail={tenant.email}
-              />
+              <span className="px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 rounded-full">
+                Portfolio
+              </span>
             </div>
-          ))}
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Manage your property portfolio, track performance metrics, and analyze investment returns.
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="bg-gray-50 dark:bg-[#1b1b1b] p-3 rounded">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Properties</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">3</p>
+              </div>
+              <div className="bg-gray-50 dark:bg-[#1b1b1b] p-3 rounded">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">$3.2M</p>
+              </div>
+            </div>
+            <div className="mt-6">
+              <Link 
+                to="/assets" 
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+              >
+                <TrendingUp className="mr-2 h-4 w-4" />
+                View Portfolio
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* QuickBooks Card */}
+        <div className="bg-white dark:bg-[#252525] rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-[#3b3b3b]">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-full">
+                  <Calculator className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <h2 className="ml-3 text-lg font-medium text-gray-900 dark:text-white">QuickBooks</h2>
+              </div>
+              <span className="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 rounded-full">
+                Financials
+              </span>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Connect to QuickBooks to sync financial data, track expenses, and generate reports.
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="bg-gray-50 dark:bg-[#1b1b1b] p-3 rounded">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Revenue</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">$846K</p>
+              </div>
+              <div className="bg-gray-50 dark:bg-[#1b1b1b] p-3 rounded">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Expenses</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">$571K</p>
+              </div>
+            </div>
+            <div className="mt-6">
+              <Link 
+                to="/quickbooks" 
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
+              >
+                <Calculator className="mr-2 h-4 w-4" />
+                View Financials
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* GETTRX Payments Card */}
+        <div className="bg-white dark:bg-[#252525] rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-[#3b3b3b]">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-full">
+                  <CreditCard className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                </div>
+                <h2 className="ml-3 text-lg font-medium text-gray-900 dark:text-white">Payments</h2>
+              </div>
+              <span className="px-2 py-1 text-xs font-medium bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-300 rounded-full">
+                GETTRX
+              </span>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Process payments, manage transactions, and handle rent collection securely.
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="bg-gray-50 dark:bg-[#1b1b1b] p-3 rounded">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Transactions</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">24</p>
+              </div>
+              <div className="bg-gray-50 dark:bg-[#1b1b1b] p-3 rounded">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Pending</p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">$12.5K</p>
+              </div>
+            </div>
+            <div className="mt-6">
+              <Link 
+                to="/payments" 
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700"
+              >
+                <CreditCard className="mr-2 h-4 w-4" />
+                Manage Payments
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity Section */}
+      <div className="bg-white dark:bg-[#252525] rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-[#3b3b3b]">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-[#3b3b3b]">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Activity</h2>
+        </div>
+        <div className="p-6">
+          <div className="space-y-4">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <CreditCard className="h-5 w-5 text-purple-500" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Payment Received</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">$1,250.00 from John Smith</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">2 hours ago</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <Building2 className="h-5 w-5 text-blue-500" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Property Value Updated</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Sunset Apartments increased by 3.2%</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">1 day ago</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <Calculator className="h-5 w-5 text-green-500" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Financial Report Generated</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">April 2025 financial summary</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">2 days ago</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

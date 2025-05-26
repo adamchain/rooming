@@ -3,10 +3,14 @@ module.exports = {
   darkMode: 'class', // This enables dark mode via class instead of media query
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
+    "./src/modules/**/*.{js,jsx,ts,tsx}",
+    "./modules/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
+        primary: '#0078d4',
+        secondary: '#1e3f66',
         // Microsoft 365 dark mode colors
         'ms-dark-bg': '#202020',
         'ms-dark-surface': '#1b1b1b',
