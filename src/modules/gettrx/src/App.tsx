@@ -2,14 +2,14 @@ import React from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 
 // Landlord Pages
-import LandlordLogin from './src/pages/landlord/Login';
-import LandlordDashboard from './src/pages/landlord/Dashboard';
-import LandlordCustomers from './src/pages/landlord/Customers';
-import LandlordPayments from './src/pages/landlord/Payments';
+import LandlordLogin from './pages/landlord/Login';
+import LandlordDashboard from './pages/landlord/Dashboard';
+import LandlordCustomers from './pages/landlord/Customers';
+import LandlordPayments from './pages/landlord/Payments';
 
 // Tenant Pages
-import TenantPayment from './src/pages/tenant/Payment';
-import TenantHistory from './src/pages/tenant/History';
+import TenantPayment from './pages/tenant/Payment';
+import TenantHistory from './pages/tenant/History';
 
 function PaymentProcessing() {
   const location = useLocation();
