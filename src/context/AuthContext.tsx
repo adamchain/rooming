@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isLandlord: true
         }));
 
-        navigate('/tenant/dashboard'); // or another admin-specific route
+        navigate('/dashboard'); // Admin goes to landlord dashboard by default
       } else {
         // Handle invalid login
         console.error('Invalid demo credentials');

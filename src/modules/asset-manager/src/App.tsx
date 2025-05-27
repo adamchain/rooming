@@ -1,5 +1,4 @@
 import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Dashboard } from './components/Dashboard';
 
 function AssetManager() {

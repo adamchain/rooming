@@ -1,19 +1,35 @@
 import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
-import { Home, Building2, Calculator, CreditCard, Moon, Sun } from 'lucide-react';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Home, Building2, Calculator, CreditCard, Moon, Sun, Users, Wrench, FileText, DollarSign, Phone, LogOut } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const navigationItems = [
-  { id: 'dashboard', icon: Home, label: 'Dashboard', path: '/' },
+  { id: 'dashboard', icon: Home, label: 'Dashboard', path: '/dashboard' },
+  { id: 'properties', icon: Building2, label: 'Properties', path: '/properties' },
+  { id: 'tenants', icon: Users, label: 'Tenants', path: '/tenants' },
+  { id: 'maintenance', icon: Wrench, label: 'Maintenance', path: '/maintenance' },
+  { id: 'payments', icon: DollarSign, label: 'Payments', path: '/payments' },
+  { id: 'financials', icon: Calculator, label: 'Financials', path: '/financials' },
+  { id: 'documents', icon: FileText, label: 'Documents', path: '/documents' },
+  { id: 'contacts', icon: Phone, label: 'Contacts', path: '/contacts' },
   { id: 'assets', icon: Building2, label: 'Asset Manager', path: '/assets' },
   { id: 'quickbooks', icon: Calculator, label: 'QuickBooks', path: '/quickbooks' },
-  { id: 'payments', icon: CreditCard, label: 'Payments', path: '/payments' }
+  { id: 'gettrx', icon: CreditCard, label: 'Payment Processing', path: '/payments' }
 ];
 
 export function Layout() {
+  const { signOut, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      navigate('/');
+      return;
+    }
+    
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
     setDarkMode(savedDarkMode);
     if (savedDarkMode) {
@@ -21,7 +37,7 @@ export function Layout() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, []);
+  }, [isAuthenticated, navigate]);
 
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
@@ -32,6 +48,11 @@ export function Layout() {
     } else {
       document.documentElement.classList.remove('dark');
     }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -62,6 +83,16 @@ export function Layout() {
               </li>
             );
           })}
+          
+          <li className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-3 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#252525] w-full text-left"
+            >
+              <LogOut className="w-5 h-5" />
+              <span>Sign Out</span>
+            </button>
+          </li>
         </ul>
       </nav>
 
