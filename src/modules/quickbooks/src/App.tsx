@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Calculator, DollarSign, PieChart, Users, ChartBar } from 'lucide-react';
+import { Calculator, DollarSign, PieChart, Users, BarChart as ChartBar } from 'lucide-react';
 
 interface FinancialData {
   date: string;
