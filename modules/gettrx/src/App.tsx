@@ -2,14 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 // Landlord Pages
-import LandlordLogin from './pages/landlord/Login';
-import LandlordDashboard from './pages/landlord/Dashboard';
-import LandlordCustomers from './pages/landlord/Customers';
-import LandlordPayments from './pages/landlord/Payments';
+import LandlordLogin from './pages/landlord/Login.tsx';
+import LandlordDashboard from './pages/landlord/Dashboard.tsx';
+import LandlordCustomers from './pages/landlord/Customers.tsx';
+import LandlordPayments from './pages/landlord/Payments.tsx';
 
 // Tenant Pages
-import TenantPayment from './pages/tenant/Payment';
-import TenantHistory from './pages/tenant/History';
+import TenantPayment from './pages/tenant/Payment.tsx';
+import TenantHistory from './pages/tenant/History.tsx';
 
 // Components
 import { Navigation } from './components/common/Navigation';
