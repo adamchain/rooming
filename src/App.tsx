@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { Layout } from './components/Layout';
-import Dashboard from './pages/Dashboard.tsx';
+import Dashboard from './pages/landlord/Dashboard.tsx';
 import Properties from './pages/Properties';
 import Tenants from './pages/Tenants';
 import Maintenance from './pages/Maintenance';
