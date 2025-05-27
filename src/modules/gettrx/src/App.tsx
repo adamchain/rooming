@@ -3,7 +3,7 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom';
 
 // Landlord Pages
 import LandlordLogin from './pages/landlord/Login';
-import LandlordDashboard from './pages/Dashboard';
+import LandlordDashboard from './pages/landlord/Dashboard';
 import LandlordCustomers from './pages/landlord/Customers';
 import LandlordPayments from './pages/landlord/Payments';
 
